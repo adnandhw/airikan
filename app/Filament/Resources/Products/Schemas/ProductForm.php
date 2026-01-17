@@ -36,7 +36,7 @@ class ProductForm
                     ->searchable()
                     ->required()
                     ->live()
-                    ->afterStateUpdated(fn (Forms\Set $set) => $set('type', null)),
+                    ->afterStateUpdated(fn ($set) => $set('type', null)),
 
                 // Jenis / Varian (Dependent Dropdown from Category embedded types)
                 Select::make('type')

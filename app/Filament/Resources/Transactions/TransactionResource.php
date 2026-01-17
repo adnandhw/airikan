@@ -52,6 +52,7 @@ class TransactionResource extends Resource
                                                 'pending' => 'Pending',
                                                 'paid' => 'Paid (Menunggu Konfirmasi)',
                                                 'approve' => 'Approve (Selesai)',
+                                                'reject' => 'Pembayaran Ditolak',
                                             ])
                                             ->native(false)
                                             ->selectablePlaceholder(false),
@@ -124,10 +125,18 @@ class TransactionResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('status')
                     ->badge()
+                    ->formatStateUsing(fn (string $state): string => match ($state) {
+                        'pending' => 'Pending',
+                        'paid' => 'Paid (Menunggu Konfirmasi)',
+                        'approve' => 'Approve (Selesai)',
+                        'reject' => 'Pembayaran Ditolak',
+                        default => $state,
+                    })
                     ->color(fn (string $state): string => match ($state) {
                         'pending' => 'warning',
                         'paid' => 'info',
                         'approve' => 'success',
+                        'reject' => 'danger',
                         default => 'gray',
                     }),
                 Tables\Columns\TextColumn::make('created_at')

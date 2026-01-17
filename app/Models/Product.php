@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Product extends Model
 {
-    use HasFactory;
+
     
     use HasFactory, \App\Traits\HasStringId;
 
@@ -22,11 +22,30 @@ class Product extends Model
         'price',
         'image',
         'stock',
+        'slug',
         'discount_percentage',
         'discount_duration',
         'discount_start_date',
         'discount_end_date',
     ];
+
+    protected static function booted()
+    {
+        static::creating(function ($product) {
+            if (empty($product->slug)) {
+                 $slug = \Illuminate\Support\Str::slug($product->name);
+                 // Ensure uniqueness if needed, but for now simple slug
+                 $product->slug = $slug;
+            }
+        });
+
+        static::updating(function ($product) {
+            // Only update slug if explicit or empty, usually good to keep stable
+            if (empty($product->slug)) {
+                 $product->slug = \Illuminate\Support\Str::slug($product->name);
+            }
+        });
+    }
 
     protected $casts = [
         '_id' => 'string',

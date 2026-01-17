@@ -31,6 +31,6 @@ class RegionController extends Controller
     public function villages(Request $request)
     {
         $districtCode = $request->query('district_code');
-        return response()->json(Village::where('district_code', $districtCode)->select('code as id', 'name')->orderBy('name')->get());
+        return response()->json(Village::where('district_code', $districtCode)->select('code as id', 'name', 'meta')->orderBy('name')->get());
     }
 }

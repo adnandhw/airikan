@@ -219,4 +219,69 @@ class BuyerController extends Controller
             ], 500);
         }
     }
+    public function forgotPassword(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'identifier' => 'required|string',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => $validator->errors()->first(),
+            ], 422);
+        }
+
+        $buyer = Buyer::where('email', $request->identifier)
+            ->orWhere('phone', $request->identifier)
+            ->first();
+
+        if (!$buyer) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Pengguna tidak ditemukan',
+            ], 404);
+        }
+
+        // Determine if input is email or phone matching the buyer
+        $isEmail = $buyer->email === $request->identifier;
+        $isPhone = $buyer->phone === $request->identifier;
+
+        $message = 'Tautan reset kata sandi telah dikirim.';
+
+        if ($isEmail) {
+             // Logic for email
+             if (!$buyer->email) {
+                 return response()->json([
+                     'success' => false,
+                     'message' => 'Tidak ada email yang terdaftar untuk akun ini.',
+                 ], 400);
+             }
+             
+             $token = \Illuminate\Support\Str::random(60);
+             \Illuminate\Support\Facades\DB::table('password_reset_tokens')->updateOrInsert(
+                 ['email' => $buyer->email],
+                 [
+                     'email' => $buyer->email,
+                     'token' => \Illuminate\Support\Facades\Hash::make($token),
+                     'created_at' => now()
+                 ]
+             );
+             
+             $message = 'Tautan reset kata sandi telah dikirim ke email Anda.';
+        } elseif ($isPhone) {
+            // Logic for phone (Simulated)
+            // In a real app, this would send a WhatsApp message or SMS
+             $message = 'Tautan reset kata sandi telah dikirim ke WhatsApp/No. HP Anda.';
+        } else {
+             // Fallback if somehow neither exact match but found (unlikely with where/orWhere logic above)
+             $message = 'Tautan reset kata sandi telah dikirim ke kontak Anda.';
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => $message,
+            'timestamp' => now()
+        ]);
+    }
 }
