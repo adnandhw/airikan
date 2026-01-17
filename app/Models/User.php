@@ -7,7 +7,10 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
-class User extends Authenticatable
+use Filament\Models\Contracts\FilamentUser;
+use Filament\Panel;
+
+class User extends Authenticatable implements FilamentUser
 {
     use HasApiTokens, HasFactory, Notifiable, \App\Traits\HasStringId;
 
@@ -15,4 +18,9 @@ class User extends Authenticatable
     
     // protected $connection = 'mysql';
     protected $fillable = ['name','email','password'];
+
+    public function canAccessPanel(Panel $panel): bool
+    {
+        return true;
+    }
 }
