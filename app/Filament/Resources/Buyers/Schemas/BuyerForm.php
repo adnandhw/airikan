@@ -24,6 +24,9 @@ class BuyerForm
                 Forms\Components\TextInput::make('password')
                     ->password()
                     ->required(fn (string $operation): bool => $operation === 'create')
+                    ->minLength(8)
+                    ->regex('/(?=.*[A-Z])(?=.*[a-z])(?=.*\d)/')
+                    ->helperText('Minimal 8 karakter, kombinasi huruf besar, huruf kecil, dan angka.')
                     ->dehydrated(fn (?string $state) => filled($state))
                     ->dehydrateStateUsing(fn (string $state): string => \Illuminate\Support\Facades\Hash::make($state))
                     ->label('Password'),

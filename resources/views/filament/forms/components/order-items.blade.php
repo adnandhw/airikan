@@ -1,5 +1,5 @@
-<div class="overflow-hidden rounded-xl border border-gray-200 shadow-sm dark:border-gray-700 dark:bg-gray-900 bg-white">
-    <table class="w-full text-sm text-left" style="table-layout: fixed; width: 100%;">
+<div class="overflow-x-auto rounded-xl border border-gray-200 shadow-sm dark:border-gray-700 dark:bg-gray-900 bg-white">
+    <table class="w-full text-sm text-left" style="table-layout: fixed; width: 100%; min-width: 600px;">
         <thead class="bg-gray-50 dark:bg-gray-800 text-gray-700 dark:text-gray-400 font-medium border-b dark:border-gray-700">
             <tr>
                 <th scope="col" style="width: 35%; padding: 16px 32px; text-align: left;">

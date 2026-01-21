@@ -27,6 +27,7 @@ Route::get('/buyers/{id}', [BuyerController::class, 'show']);
 Route::put('/buyers/{id}', [BuyerController::class, 'update']);
 Route::post('/login', [BuyerController::class, 'login']);
 Route::post('/forgot-password', [BuyerController::class, 'forgotPassword']);
+Route::post('/reset-password', [BuyerController::class, 'resetPassword']);
 
 // TRANSACTION
 Route::post('/transactions', [TransactionController::class, 'store']);

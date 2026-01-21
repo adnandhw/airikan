@@ -14,15 +14,17 @@ class BuyerController extends Controller
         $validator = Validator::make($request->all(), [
             'firstName' => 'required|string|max:60',
             'lastName' => 'required|string|max:60',
-            'email' => 'required|string|email|max:255|unique:buyers',
             'phone' => 'required|string|max:255|unique:buyers',
-            'password' => 'required|string',
+            'password' => 'required|string|min:8|regex:/[A-Z]/|regex:/[a-z]/|regex:/[0-9]/',
             'provinceId' => 'nullable|string',
             'regencyId' => 'nullable|string',
             'districtId' => 'nullable|string',
             'villageId' => 'nullable|string',
             'address' => 'nullable|string',
             'postalCode' => 'nullable|string',
+        ], [
+            'password.min' => 'Password harus minimal 8 karakter.',
+            'password.regex' => 'Password harus kombinasi huruf besar, huruf kecil, dan angka.',
         ]);
 
         if ($validator->fails()) {
@@ -146,6 +148,10 @@ class BuyerController extends Controller
             'villageId' => 'nullable|string',
             'address' => 'nullable|string',
             'postalCode' => 'nullable|string',
+            'password' => 'sometimes|string|min:8|regex:/[A-Z]/|regex:/[a-z]/|regex:/[0-9]/',
+        ], [
+            'password.min' => 'Password harus minimal 8 karakter.',
+            'password.regex' => 'Password harus kombinasi huruf besar, huruf kecil, dan angka.',
         ]);
 
         if ($validator->fails()) {
@@ -222,7 +228,7 @@ class BuyerController extends Controller
     public function forgotPassword(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'identifier' => 'required|string',
+            'identifier' => 'required|email',
         ]);
 
         if ($validator->fails()) {
@@ -232,56 +238,98 @@ class BuyerController extends Controller
             ], 422);
         }
 
-        $buyer = Buyer::where('email', $request->identifier)
-            ->orWhere('phone', $request->identifier)
-            ->first();
+        $buyer = Buyer::where('email', $request->identifier)->first();
 
         if (!$buyer) {
             return response()->json([
                 'success' => false,
-                'message' => 'Pengguna tidak ditemukan',
+                'message' => 'Email tidak terdaftar.',
             ], 404);
         }
 
-        // Determine if input is email or phone matching the buyer
-        $isEmail = $buyer->email === $request->identifier;
-        $isPhone = $buyer->phone === $request->identifier;
+        $token = \Illuminate\Support\Str::random(60);
+        \Illuminate\Support\Facades\DB::table('password_reset_tokens')->updateOrInsert(
+            ['email' => $buyer->email],
+            [
+                'email' => $buyer->email,
+                'token' => \Illuminate\Support\Facades\Hash::make($token),
+                'created_at' => now()
+            ]
+        );
 
-        $message = 'Tautan reset kata sandi telah dikirim.';
-
-        if ($isEmail) {
-             // Logic for email
-             if (!$buyer->email) {
-                 return response()->json([
-                     'success' => false,
-                     'message' => 'Tidak ada email yang terdaftar untuk akun ini.',
-                 ], 400);
-             }
-             
-             $token = \Illuminate\Support\Str::random(60);
-             \Illuminate\Support\Facades\DB::table('password_reset_tokens')->updateOrInsert(
-                 ['email' => $buyer->email],
-                 [
-                     'email' => $buyer->email,
-                     'token' => \Illuminate\Support\Facades\Hash::make($token),
-                     'created_at' => now()
-                 ]
-             );
-             
-             $message = 'Tautan reset kata sandi telah dikirim ke email Anda.';
-        } elseif ($isPhone) {
-            // Logic for phone (Simulated)
-            // In a real app, this would send a WhatsApp message or SMS
-             $message = 'Tautan reset kata sandi telah dikirim ke WhatsApp/No. HP Anda.';
-        } else {
-             // Fallback if somehow neither exact match but found (unlikely with where/orWhere logic above)
-             $message = 'Tautan reset kata sandi telah dikirim ke kontak Anda.';
+        try {
+            \Illuminate\Support\Facades\Mail::to($buyer->email)->send(new \App\Mail\ResetPasswordMail($token, $buyer->email));
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Tautan reset kata sandi telah dikirim ke email Anda.',
+            ]);
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Mail Error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal mengirim email reset password.',
+            ], 500);
         }
+    }
+
+    public function resetPassword(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'token' => 'required',
+            'email' => 'required|email',
+            'password' => 'required|string|min:8|regex:/[A-Z]/|regex:/[a-z]/|regex:/[0-9]/',
+        ], [
+            'password.min' => 'Password harus minimal 8 karakter.',
+            'password.regex' => 'Password harus kombinasi huruf besar, huruf kecil, dan angka.',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => $validator->errors()->first(),
+            ], 422);
+        }
+
+        // Verify Token
+        $resetRecord = \Illuminate\Support\Facades\DB::table('password_reset_tokens')
+            ->where('email', $request->email)
+            ->first();
+
+        if (!$resetRecord || !\Illuminate\Support\Facades\Hash::check($request->token, $resetRecord->token)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Token tidak valid atau kadaluarsa.',
+            ], 400);
+        }
+
+        // Check expiration (e.g., 60 minutes)
+        if (\Carbon\Carbon::parse($resetRecord->created_at)->addMinutes(60)->isPast()) {
+            \Illuminate\Support\Facades\DB::table('password_reset_tokens')->where('email', $request->email)->delete();
+            return response()->json([
+                'success' => false,
+                'message' => 'Token telah kadaluarsa.',
+            ], 400);
+        }
+
+        // Update Password
+        $buyer = Buyer::where('email', $request->email)->first();
+        if (!$buyer) {
+            return response()->json([
+                'success' => false,
+                'message' => 'User tidak ditemukan.',
+            ], 404);
+        }
+
+        $buyer->password = \Illuminate\Support\Facades\Hash::make($request->password);
+        $buyer->save();
+
+        // Delete Token
+        \Illuminate\Support\Facades\DB::table('password_reset_tokens')->where('email', $request->email)->delete();
 
         return response()->json([
             'success' => true,
-            'message' => $message,
-            'timestamp' => now()
+            'message' => 'Password berhasil diubah. Silakan login.',
         ]);
     }
 }

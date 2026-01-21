@@ -19,18 +19,93 @@ class TransactionController extends Controller
             'buyer_id' => 'required',
             'buyer_info' => 'required',
             'products' => 'required|array',
-            'total_amount' => 'required|numeric',
+            // 'total_amount' => 'required|numeric', // We ignore this now
         ]);
 
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
         }
 
+        // --- SECURITY: RECALCULATE TOTAL & SANITIZE PRODUCTS ---
+        $calculatedTotal = 0;
+        $sanitizedProducts = [];
+        $productListText = "";
+
+        foreach ($request->products as $item) {
+            $qty = (int) $item['quantity'];
+            if ($qty <= 0) continue;
+
+            $productId = $item['product_id'];
+            $effectivePrice = 0;
+            $productName = "Unknown Product";
+            
+            // Explicitly reset variables for each iteration
+            $mainProduct = null;
+            $resellerProduct = null;
+
+            // 1. Try to find in Regular Products
+            $mainProduct = Product::find($productId);
+            
+            if ($mainProduct) {
+                $effectivePrice = $mainProduct->price;
+                $productName = $mainProduct->name;
+            } else {
+                // 2. Try to find in Reseller Products
+                $resellerProduct = ProductReseller::find($productId);
+
+                if ($resellerProduct) {
+                    $productName = $resellerProduct->name;
+                    // Check Tier Pricing
+                    $price = $resellerProduct->price;
+                    if (!empty($resellerProduct->tier_pricing) && is_array($resellerProduct->tier_pricing)) {
+                        // Sort tiers by quantity descending
+                        $tiers = collect($resellerProduct->tier_pricing)->sortByDesc('quantity');
+                        $matchedTier = $tiers->first(function ($tier) use ($qty) {
+                            return $qty >= $tier['quantity'];
+                        });
+
+                        if ($matchedTier) {
+                            if (isset($matchedTier['unit_price'])) {
+                                $price = $matchedTier['unit_price'];
+                            } elseif (isset($matchedTier['discount_percentage'])) {
+                                $price = $resellerProduct->price * (1 - ($matchedTier['discount_percentage'] / 100));
+                            }
+                        }
+                    }
+                    $effectivePrice = $price;
+                } else {
+                    // Product not found in DB
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Produk tidak valid atau tidak ditemukan ID: ' . $productId
+                    ], 400);
+                }
+            }
+
+            $currentSubtotal = $effectivePrice * $qty;
+            $calculatedTotal += $currentSubtotal;
+
+            // Reconstruct item with server-side price
+            $sanitizedItem = [
+                'product_id' => $productId,
+                'name' => $productName,
+                'image_url' => $item['image_url'] ?? null,
+                'type' => $item['type'] ?? 'product',
+                'price' => $effectivePrice,
+                'quantity' => $qty,
+                'is_reseller' => $resellerProduct ? true : false
+            ];
+            $sanitizedProducts[] = $sanitizedItem;
+
+            $formattedPrice = number_format($effectivePrice, 0, ',', '.');
+            $productListText .= "- {$productName} (x{$qty}) - Rp{$formattedPrice}\n";
+        }
+
         $transaction = Transaction::create([
             'buyer_id' => $request->buyer_id,
             'buyer_info' => $request->buyer_info,
-            'products' => $request->products,
-            'total_amount' => $request->total_amount,
+            'products' => $sanitizedProducts,
+            'total_amount' => $calculatedTotal, // Trust Server Calculation
             'status' => 'pending',
             'payment_proof' => null
         ]);
@@ -39,66 +114,6 @@ class TransactionController extends Controller
         $transaction->update([
             'short_id' => strtoupper(substr($transaction->id, 0, 8))
         ]);
-
-        // --- STOCK SYNCHRONIZATION LOGIC (MOVED TO ADMIN APPROVAL) ---
-        // logic moved to Filament/Resources/Transactions/Pages/EditTransaction.php
-        /*
-        foreach ($request->products as $item) {
-            $qty = (int) $item['quantity'];
-            $productId = $item['product_id'];
-
-            // 1. Try to find in Regular Products
-            $mainProduct = Product::find($productId);
-            
-            if ($mainProduct) {
-                // It is a Main Product
-                // Decrement its own stock
-                if ($mainProduct->stock >= $qty) {
-                    $mainProduct->decrement('stock', $qty);
-                }
-
-                // Decrement all linked Reseller Products
-                ProductReseller::where('product_id', $mainProduct->id)->decrement('stock', $qty);
-
-            } else {
-                // 2. Try to find in Reseller Products
-                $resellerProduct = ProductReseller::find($productId);
-
-                if ($resellerProduct) {
-                    // It is a Reseller Product
-                    // Decrement its own stock
-                    if ($resellerProduct->stock >= $qty) {
-                        $resellerProduct->decrement('stock', $qty);
-                    }
-
-                    // Check if it has a parent Product
-                    if (!empty($resellerProduct->product_id)) {
-                        $parentProduct = Product::find($resellerProduct->product_id);
-                        if ($parentProduct) {
-                            // Decrement Parent Product
-                            if ($parentProduct->stock >= $qty) {
-                                $parentProduct->decrement('stock', $qty);
-                            }
-
-                            // Decrement OTHER linked Reseller Products (siblings)
-                            ProductReseller::where('product_id', $parentProduct->id)
-                                ->where('id', '!=', $resellerProduct->id)
-                                ->decrement('stock', $qty);
-                        }
-                    }
-                }
-            }
-        }
-        */
-        // -----------------------------------
-
-        // Format Product List for Email
-        $productList = "";
-        foreach ($request->products as $product) {
-            $price = number_format($product['price'], 0, ',', '.');
-            $subtotal = number_format($product['price'] * $product['quantity'], 0, ',', '.');
-            $productList .= "- {$product['name']} (x{$product['quantity']}) - Rp{$price}\n";
-        }
 
         // Send Email Notification to Admin
         try {
@@ -109,8 +124,8 @@ class TransactionController extends Controller
                 "No. HP: " . ($request->buyer_info['phone'] ?? '-') . "\n" .
                 "Alamat: " . ($request->buyer_info['address'] ?? '-') . "\n\n" .
                 "Detail Pesanan:\n" .
-                $productList . "\n" .
-                "Total Pembayaran: Rp" . number_format($request->total_amount, 0, ',', '.') . " (Belum termasuk Ongkir)\n\n" .
+                $productListText . "\n" .
+                "Total Pembayaran (Server Validated): Rp" . number_format($calculatedTotal, 0, ',', '.') . " (Belum termasuk Ongkir)\n\n" .
                 "Silakan cek Admin Panel untuk detailnya.",
                 function ($message) {
                     $message->to('adnandhw@gmail.com')
@@ -118,7 +133,6 @@ class TransactionController extends Controller
                 }
             );
         } catch (\Exception $e) {
-            // Log error but don't fail the transaction
             \Illuminate\Support\Facades\Log::error('Email notification failed: ' . $e->getMessage());
         }
 

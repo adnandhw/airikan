@@ -62,7 +62,19 @@ class TransactionResource extends Resource
                                         ->content(fn ($record) => $record?->created_at?->translatedFormat('d F Y \p\u\k\u\l H.i') ?? '-'),
                             ]),
 
-                        // 2. Info Pengiriman
+                        // 2. Payment Proof (MOVED UP FOR BETTER VISIBILITY)
+                        Schemas\Components\Section::make('BUKTI PEMBAYARAN')
+                            ->schema([
+                                Forms\Components\Placeholder::make('payment_proof_preview')
+                                    ->hiddenLabel()
+                                    ->content(fn ($record) => $record && $record->payment_proof 
+                                        ? new \Illuminate\Support\HtmlString('<div style="text-align: center;"><a href="' . url($record->payment_proof) . '" target="_blank"><img src="' . url($record->payment_proof) . '" style="max-height: 500px; max-width: 100%; border-radius: 8px; border: 1px solid #ddd; margin: 0 auto;" /></a><br/><small class="text-gray-500">Klik gambar untuk memperbesar</small></div>') 
+                                        : 'Belum ada bukti pembayaran')
+                                    ->columnSpanFull(),
+                            ])
+                            ->collapsible(),
+
+                        // 3. Info Pengiriman
                         Schemas\Components\Section::make('INFO PENGIRIMAN')
                             ->schema([
                                 Schemas\Components\Grid::make(2)
@@ -85,18 +97,10 @@ class TransactionResource extends Resource
                             ])
                             ->compact(),
 
-                        // 3. Products Table (Includes Total)
+                        // 4. Products Table (Includes Total)
                         Forms\Components\ViewField::make('products')
                             ->view('filament.forms.components.order-items')
                             ->hiddenLabel()
-                            ->columnSpanFull(),
-
-                        // 4. Payment Proof
-                        Forms\Components\Placeholder::make('payment_proof_preview')
-                            ->label('Preview Bukti Pembayaran')
-                            ->content(fn ($record) => $record && $record->payment_proof 
-                                ? new \Illuminate\Support\HtmlString('<div style="margin-bottom: 10px;"><a href="' . $record->payment_proof . '" target="_blank"><img src="' . $record->payment_proof . '" style="max-height: 400px; max-width: 100%; border-radius: 8px; border: 1px solid #ddd;" /></a><br/><small class="text-gray-500">Klik gambar untuk memperbesar</small></div>') 
-                                : 'Belum ada bukti pembayaran')
                             ->columnSpanFull(),
 
 
@@ -123,6 +127,11 @@ class TransactionResource extends Resource
                     ->money('IDR')
                     ->sortable()
                     ->searchable(),
+                Tables\Columns\TextColumn::make('payment_proof')
+                    ->label('Bukti')
+                    ->html()
+                    ->formatStateUsing(fn ($record) => $record->payment_proof ? '<a href="'.url($record->payment_proof).'" target="_blank"><img src="'.url($record->payment_proof).'" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px; border: 1px solid #ddd;" /></a>' : '<span class="text-gray-400">None</span>')
+                    ->placeholder('None'),
                 Tables\Columns\TextColumn::make('status')
                     ->badge()
                     ->formatStateUsing(fn (string $state): string => match ($state) {

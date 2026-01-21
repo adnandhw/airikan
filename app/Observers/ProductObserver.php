@@ -28,7 +28,7 @@ class ProductObserver
             $product->discount_duration = $duration;
             
             $product->discount_start_date = Carbon::now();
-            $product->discount_end_date = Carbon::now()->addDays($duration);
+            $product->discount_end_date = Carbon::now()->addDays($duration + 1)->startOfDay();
         }
     }
 
@@ -48,6 +48,7 @@ class ProductObserver
             'image' => $product->image,
             'size' => $product->size,
             'category_id' => $product->category_id,
+            'is_active' => false, // Default to hidden so admin must approve/enable it first
             'tier_pricing' => [] // Initialize empty, manageable by Reseller Admin
         ]);
     }
