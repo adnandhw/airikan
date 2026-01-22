@@ -258,6 +258,9 @@ class BuyerController extends Controller
         );
 
         try {
+            $resetLink = url("/reset-password?token={$token}&email=" . urlencode($buyer->email));
+            \Illuminate\Support\Facades\Log::info("MANUAL RESET LINK for {$buyer->email}: {$resetLink}");
+
             \Illuminate\Support\Facades\Mail::to($buyer->email)->send(new \App\Mail\ResetPasswordMail($token, $buyer->email));
             
             return response()->json([
@@ -268,7 +271,7 @@ class BuyerController extends Controller
             \Illuminate\Support\Facades\Log::error('Mail Error: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
-                'message' => 'Gagal mengirim email reset password.',
+                'message' => 'Gagal mengirim email: ' . $e->getMessage(),
             ], 500);
         }
     }
