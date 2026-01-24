@@ -23,7 +23,7 @@ class ResetPasswordMail extends Mailable
     {
         $this->token = $token;
         $this->email = $email;
-        $baseUrl = env('FRONTEND_URL', 'https://airikan.com');
+        $baseUrl = rtrim(env('FRONTEND_URL', 'https://airikan.com'), '/');
         $this->url = "{$baseUrl}/reset-password?token={$token}&email=" . urlencode($email);
     }
 
