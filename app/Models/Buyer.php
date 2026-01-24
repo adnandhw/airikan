@@ -27,6 +27,8 @@ class Buyer extends Model
         'postal_code',
         'is_reseller',
         'reseller_status',
+        'verification_token',
+        'email_verified_at',
     ];
 
     /**

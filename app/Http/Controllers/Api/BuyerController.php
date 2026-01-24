@@ -36,10 +36,11 @@ class BuyerController extends Controller
         }
 
         try {
+            $verificationToken = \Illuminate\Support\Str::random(60);
+
             $buyer = Buyer::create([
                 'name' => $request->firstName . ' ' . $request->lastName,
                 'email' => $request->email,
-                'phone' => $request->phone,
                 'phone' => $request->phone,
                 'password' => \Illuminate\Support\Facades\Hash::make($request->password),
                 'province_id' => $request->provinceId,
@@ -48,7 +49,15 @@ class BuyerController extends Controller
                 'village_id' => $request->villageId,
                 'address' => $request->address,
                 'postal_code' => $request->postalCode,
+                'verification_token' => $verificationToken,
             ]);
+
+            try {
+                \Illuminate\Support\Facades\Mail::to($buyer->email)->send(new \App\Mail\VerificationMail($buyer, $verificationToken));
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::error('Mail Error: ' . $e->getMessage());
+                // Continue even if mail fails, user can resend later
+            }
 
             return response()->json([
                 'success' => true,
@@ -98,6 +107,15 @@ class BuyerController extends Controller
                 'success' => false,
                 'message' => 'Invalid password.',
             ], 401);
+        }
+
+        if (is_null($buyer->email_verified_at)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Email belum diverifikasi. Silakan cek inbox email Anda.',
+                'unverified' => true,
+                'email' => $buyer->email
+            ], 403);
         }
 
         return response()->json([
@@ -334,5 +352,69 @@ class BuyerController extends Controller
             'success' => true,
             'message' => 'Password berhasil diubah. Silakan login.',
         ]);
+    }
+    public function verifyEmail(Request $request) {
+        $validator = Validator::make($request->all(), [
+            'token' => 'required',
+            'email' => 'required|email',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['success' => false, 'message' => $validator->errors()->first()], 422);
+        }
+
+        // Find by email first
+        $buyer = Buyer::where('email', $request->email)->first();
+
+        if (!$buyer) {
+            return response()->json(['success' => false, 'message' => 'Email tidak valid.'], 400);
+        }
+
+        // Check if already verified
+        if ($buyer->email_verified_at) {
+            return response()->json(['success' => true, 'message' => 'Email sudah diverifikasi sebelumnya.']);
+        }
+
+        // Check token
+        if ($buyer->verification_token !== $request->token) {
+            return response()->json(['success' => false, 'message' => 'Token verifikasi tidak valid.'], 400);
+        }
+
+        $buyer->email_verified_at = now();
+        $buyer->verification_token = null; // Clear token after usage
+        $buyer->save();
+
+        return response()->json(['success' => true, 'message' => 'Email berhasil diverifikasi. Silakan login.']);
+    }
+
+    public function resendVerification(Request $request) {
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['success' => false, 'message' => $validator->errors()->first()], 422);
+        }
+
+        $buyer = Buyer::where('email', $request->email)->first();
+
+        if (!$buyer) {
+            return response()->json(['success' => false, 'message' => 'Email tidak terdaftar.'], 404);
+        }
+
+        if ($buyer->email_verified_at) {
+            return response()->json(['success' => false, 'message' => 'Email sudah diverifikasi.'], 400);
+        }
+
+        $token = \Illuminate\Support\Str::random(60);
+        $buyer->verification_token = $token;
+        $buyer->save();
+
+        try {
+            \Illuminate\Support\Facades\Mail::to($buyer->email)->send(new \App\Mail\VerificationMail($buyer, $token));
+            return response()->json(['success' => true, 'message' => 'Link verifikasi telah dikirim ulang.']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Gagal mengirim email.'], 500);
+        }
     }
 }

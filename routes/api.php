@@ -28,6 +28,8 @@ Route::put('/buyers/{id}', [BuyerController::class, 'update']);
 Route::post('/login', [BuyerController::class, 'login']);
 Route::post('/forgot-password', [BuyerController::class, 'forgotPassword']);
 Route::post('/reset-password', [BuyerController::class, 'resetPassword']);
+Route::post('/verify-email', [BuyerController::class, 'verifyEmail']);
+Route::post('/resend-verification', [BuyerController::class, 'resendVerification']);
 
 // TRANSACTION
 Route::post('/transactions', [TransactionController::class, 'store']);

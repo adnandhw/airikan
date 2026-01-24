@@ -27,10 +27,10 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->id('admin')
             ->path('admin')
-            ->brandName('Air Ikan Store')
-            ->brandLogo(asset('images/Air Ikan.png'))
+            ->brandName('Admin Air Ikan Store')
+            ->brandLogo(fn () => view('filament.logo'))
             ->brandLogoHeight('3rem')
-            ->favicon(asset('favicon.ico'))
+            ->favicon(asset('images/Air Ikan.png'))
             ->login()
             ->colors([
                 'primary' => Color::Amber,

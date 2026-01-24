@@ -169,8 +169,10 @@ class TransactionController extends Controller
 
         if ($request->hasFile('image')) {
             $image = $request->file('image');
-            $imageName = time() . '.' . $image->getClientOriginalExtension();
-            $image->move(public_path('uploads/payment_proofs'), $imageName);
+            
+            // Use Laravel Storage (public disk)
+            // This stores in storage/app/public/payment_proofs
+            $path = $image->store('payment_proofs', 'public');
 
             \Illuminate\Support\Facades\Log::info("Uploading proof for ID: " . $id);
             $transaction = Transaction::find($id);
@@ -180,7 +182,8 @@ class TransactionController extends Controller
                 return response()->json(['success' => false, 'message' => 'Transaction not found for ID: ' . $id], 404);
             }
 
-            $transaction->payment_proof = '/uploads/payment_proofs/' . $imageName;
+            // Save the path compatible with Filament ImageColumn (relative path)
+            $transaction->payment_proof = $path;
             $transaction->status = 'paid'; // Mark as 'paid' (Waiting Confirmation)
             $transaction->save();
 

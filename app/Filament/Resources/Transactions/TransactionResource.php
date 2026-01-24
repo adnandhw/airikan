@@ -65,10 +65,10 @@ class TransactionResource extends Resource
                         // 2. Payment Proof (MOVED UP FOR BETTER VISIBILITY)
                         Schemas\Components\Section::make('BUKTI PEMBAYARAN')
                             ->schema([
-                                Forms\Components\Placeholder::make('payment_proof_preview')
+                                Forms\Components\Placeholder::make('payment_proof_display')
                                     ->hiddenLabel()
                                     ->content(fn ($record) => $record && $record->payment_proof 
-                                        ? new \Illuminate\Support\HtmlString('<div style="text-align: center;"><a href="' . url($record->payment_proof) . '" target="_blank"><img src="' . url($record->payment_proof) . '" style="max-height: 500px; max-width: 100%; border-radius: 8px; border: 1px solid #ddd; margin: 0 auto;" /></a><br/><small class="text-gray-500">Klik gambar untuk memperbesar</small></div>') 
+                                        ? new \Illuminate\Support\HtmlString('<div style="text-align: center;"><a href="' . asset('storage/' . $record->payment_proof) . '" target="_blank"><img src="' . asset('storage/' . $record->payment_proof) . '" style="max-height: 250px; max-width: 100%; border-radius: 8px; border: 1px solid #ddd; margin: 0 auto;" /></a><br/><small class="text-gray-500">Klik gambar untuk memperbesar</small></div>') 
                                         : 'Belum ada bukti pembayaran')
                                     ->columnSpanFull(),
                             ])
@@ -127,11 +127,11 @@ class TransactionResource extends Resource
                     ->money('IDR')
                     ->sortable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('payment_proof')
+                Tables\Columns\ImageColumn::make('payment_proof')
                     ->label('Bukti')
-                    ->html()
-                    ->formatStateUsing(fn ($record) => $record->payment_proof ? '<a href="'.url($record->payment_proof).'" target="_blank"><img src="'.url($record->payment_proof).'" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px; border: 1px solid #ddd;" /></a>' : '<span class="text-gray-400">None</span>')
-                    ->placeholder('None'),
+                    ->disk('public')
+                    ->visibility('public')
+                    ->square(),
                 Tables\Columns\TextColumn::make('status')
                     ->badge()
                     ->formatStateUsing(fn (string $state): string => match ($state) {
