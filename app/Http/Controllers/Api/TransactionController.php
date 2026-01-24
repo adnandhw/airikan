@@ -43,14 +43,9 @@ class TransactionController extends Controller
             $mainProduct = null;
             $resellerProduct = null;
 
-            // 1. Try to find in Regular Products
-            $mainProduct = Product::find($productId);
-            
-            if ($mainProduct) {
-                $effectivePrice = $mainProduct->price;
-                $productName = $mainProduct->name;
-            } else {
-                // 2. Try to find in Reseller Products
+            // 1. Determine type based on request flag
+            if (isset($item['is_reseller']) && $item['is_reseller']) {
+                // Search ONLY in Reseller Products
                 $resellerProduct = ProductReseller::find($productId);
 
                 if ($resellerProduct) {
@@ -74,10 +69,22 @@ class TransactionController extends Controller
                     }
                     $effectivePrice = $price;
                 } else {
-                    // Product not found in DB
-                    return response()->json([
+                     return response()->json([
                         'success' => false,
-                        'message' => 'Produk tidak valid atau tidak ditemukan ID: ' . $productId
+                        'message' => 'Produk Reseller tidak ditemukan ID: ' . $productId
+                    ], 400);
+                }
+            } else {
+                // Search ONLY in Regular Products
+                $mainProduct = Product::find($productId);
+                
+                if ($mainProduct) {
+                    $effectivePrice = $mainProduct->price;
+                    $productName = $mainProduct->name;
+                } else {
+                     return response()->json([
+                        'success' => false,
+                        'message' => 'Produk tidak ditemukan ID: ' . $productId
                     ], 400);
                 }
             }
