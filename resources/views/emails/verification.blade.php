@@ -10,7 +10,7 @@
         <p>Terima kasih telah mendaftar di Air Ikan Store. Silakan klik tombol di bawah ini untuk memverifikasi email Anda dan mengaktifkan akun Anda.</p>
         
         <div style="text-align: center; margin: 30px 0;">
-            <a href="{{ $url }}" style="background-color: #F8B600; color: #000; padding: 12px 24px; text-decoration: none; border-radius: 4px; font-weight: bold;">Verifikasi Email</a>
+            <a href="{{ $url }}" style="background-color: #0F4C75; background: linear-gradient(135deg, #0F4C75 0%, #3282B8 100%); color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 4px; font-weight: bold;">Login Sekarang</a>
         </div>
         
         <p>Jika tombol di atas tidak berfungsi, salin dan tempel tautan berikut di browser Anda:</p>
