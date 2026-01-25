@@ -30,7 +30,7 @@ class AdminPanelProvider extends PanelProvider
             ->brandName('Admin Air Ikan Store')
             ->brandLogo(fn () => view('filament.logo'))
             ->brandLogoHeight('3rem')
-            ->favicon(asset('images/Air Ikan.png'))
+            ->favicon(asset('favicon.png'))
             ->login()
             ->colors([
                 'primary' => Color::Amber,

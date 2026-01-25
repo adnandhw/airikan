@@ -6,7 +6,7 @@
 <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
     <div style="max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
         <h2 style="color: #0F4C75; text-align: center;">Reset Password</h2>
-        <p>Halo,</p>
+        <p>Halo {{ $user->name }},</p>
         <p>Kami menerima permintaan untuk mereset kata sandi akun Anda di Air Ikan Store.</p>
         <p>Silakan klik tombol di bawah ini untuk membuat kata sandi baru:</p>
         

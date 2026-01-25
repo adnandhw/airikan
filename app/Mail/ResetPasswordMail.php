@@ -14,17 +14,19 @@ class ResetPasswordMail extends Mailable
 
     public $token;
     public $email;
+    public $user;
     public $url;
 
     /**
      * Create a new message instance.
      */
-    public function __construct($token, $email)
+    public function __construct($token, $user)
     {
         $this->token = $token;
-        $this->email = $email;
+        $this->user = $user;
+        $this->email = $user->email;
         $baseUrl = rtrim(env('FRONTEND_URL', 'https://airikan.com'), '/');
-        $this->url = "{$baseUrl}/reset-password?token={$token}&email=" . urlencode($email);
+        $this->url = "{$baseUrl}/reset-password?token={$token}&email=" . urlencode($user->email);
     }
 
     /**

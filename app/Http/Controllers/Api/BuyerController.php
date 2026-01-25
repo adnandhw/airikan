@@ -279,7 +279,7 @@ class BuyerController extends Controller
             $resetLink = url("/reset-password?token={$token}&email=" . urlencode($buyer->email));
             \Illuminate\Support\Facades\Log::info("MANUAL RESET LINK for {$buyer->email}: {$resetLink}");
 
-            \Illuminate\Support\Facades\Mail::to($buyer->email)->send(new \App\Mail\ResetPasswordMail($token, $buyer->email));
+            \Illuminate\Support\Facades\Mail::to($buyer->email)->send(new \App\Mail\ResetPasswordMail($token, $buyer));
             
             return response()->json([
                 'success' => true,
