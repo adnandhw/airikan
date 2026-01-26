@@ -106,6 +106,8 @@ class ProductForm
                 // Upload gambar
                 FileUpload::make('image')
                     ->label('Foto Produk')
+                    ->image()
+                    ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/jpg', 'image/gif', 'image/webp', 'image/svg+xml', 'application/octet-stream'])
                     ->disk('public')
                     ->directory('products')
                     ->imagePreviewHeight('150')
