@@ -135,7 +135,7 @@ class TransactionController extends Controller
                 "Total Pembayaran (Server Validated): Rp" . number_format($calculatedTotal, 0, ',', '.') . " (Belum termasuk Ongkir)\n\n" .
                 "Silakan cek Admin Panel untuk detailnya.",
                 function ($message) {
-                    $message->to('adnandhw@gmail.com')
+                    $message->to(['adnandhw@gmail.com', 'black.busted99@gmail.com'])
                             ->subject('Notifikasi Pesanan Baru - Air Ikan Store');
                 }
             );
@@ -196,7 +196,7 @@ class TransactionController extends Controller
 
             // Send Email to Admin
             try {
-                \Illuminate\Support\Facades\Mail::to('adnandhw@gmail.com')->send(new \App\Mail\PaymentProofUploaded($transaction));
+                \Illuminate\Support\Facades\Mail::to(['adnandhw@gmail.com', 'black.busted99@gmail.com'])->send(new \App\Mail\PaymentProofUploaded($transaction));
             } catch (\Exception $e) {
                 \Illuminate\Support\Facades\Log::error('Failed to send payment proof email: ' . $e->getMessage());
             }

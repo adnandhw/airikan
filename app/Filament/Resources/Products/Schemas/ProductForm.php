@@ -106,7 +106,7 @@ class ProductForm
                 // Upload gambar
                 FileUpload::make('image')
                     ->label('Foto Produk')
-                    ->image()
+                    ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/jpg', 'image/webp'])
                     ->disk('public')
                     ->directory('products')
                     ->imagePreviewHeight('150')
@@ -141,7 +141,7 @@ class ProductForm
                         TextInput::make('discount_duration')
                             ->label('Durasi Diskon (Hari)')
                             ->numeric()
-                            ->minValue(1)
+                            ->minValue(0)
                             ->maxValue(30)
                             ->suffix('Hari')
                             ->placeholder('1 - 30'),
