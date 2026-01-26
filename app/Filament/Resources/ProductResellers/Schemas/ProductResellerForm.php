@@ -89,7 +89,6 @@ class ProductResellerForm
                     ->label('Foto Produk (Sinkron)')
                     ->disabled()
                     ->dehydrated(false)
-                    ->image()
                     ->disk('public')
                     ->directory('product_resellers')
                     ->imagePreviewHeight('150')
