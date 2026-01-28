@@ -18,7 +18,7 @@ class EditTransaction extends EditRecord
                 ->icon('heroicon-o-printer')
                 ->url(fn ($record) => route('transactions.print', $record))
                 ->openUrlInNewTab(),
-            Actions\DeleteAction::make(),
+            DeleteAction::make(),
         ];
     }
 
