@@ -13,7 +13,12 @@ class EditTransaction extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            DeleteAction::make(),
+            \Filament\Actions\Action::make('print')
+                ->label('Print')
+                ->icon('heroicon-o-printer')
+                ->url(fn ($record) => route('transactions.print', $record))
+                ->openUrlInNewTab(),
+            Actions\DeleteAction::make(),
         ];
     }
 
