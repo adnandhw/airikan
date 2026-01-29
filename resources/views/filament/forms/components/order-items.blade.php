@@ -4,8 +4,8 @@
         $total = 0;
     @endphp
 
-    {{-- 1. Desktop Layout (Table) --}}
-    <div class="hidden sm:block overflow-x-auto">
+    {{-- Transaction Table with Horizontal Scroll on Mobile --}}
+    <div class="overflow-x-auto w-full">
         <table class="w-full text-sm text-left" style="table-layout: fixed; width: 100%; min-width: 600px;">
             <thead class="bg-gray-50 dark:bg-gray-800 text-gray-700 dark:text-gray-400 font-medium border-b dark:border-gray-700">
                 <tr>
@@ -73,48 +73,6 @@
                 </tr>
             </tfoot>
         </table>
-    </div>
-
-    {{-- 2. Mobile Layout (List) --}}
-    <div class="block sm:hidden divide-y divide-gray-100 dark:divide-gray-700">
-        @php $total = 0; @endphp
-        @forelse($products as $product)
-            @php
-                $price = $product['price'] ?? 0;
-                $quantity = $product['quantity'] ?? 0;
-                $subtotal = $price * $quantity;
-                $total += $subtotal;
-                $type = $product['type'] ?? 'Item';
-            @endphp
-            <div class="p-4">
-                {{-- Product Info (Compact) --}}
-                <div class="font-bold text-gray-900 dark:text-white text-base leading-tight">
-                    {{ $product['name'] ?? '-' }}
-                </div>
-                <div class="text-xs text-gray-500 mt-1">
-                    {{ $type }}
-                </div>
-                
-                <div class="mt-2 flex justify-between items-center text-sm">
-                    <div class="text-gray-600 dark:text-gray-400">
-                        <span class="font-bold text-gray-900 dark:text-white">{{ $quantity }}</span> x Rp{{ number_format($price, 0, ',', '.') }}
-                    </div>
-                    <div class="font-extrabold text-gray-900 dark:text-white">
-                        Rp{{ number_format($subtotal, 0, ',', '.') }}
-                    </div>
-                </div>
-            </div>
-        @empty
-            <div class="p-8 text-center text-gray-500 italic">Tidak ada produk</div>
-        @endforelse
-
-        {{-- Mobile Footer --}}
-        <div class="p-4 bg-gray-50 dark:bg-gray-800 border-t dark:border-gray-700 flex justify-between items-center">
-            <div class="text-xs font-bold text-gray-500 uppercase tracking-widest">Total Pembayaran</div>
-            <div class="text-xl font-extrabold text-blue-600 dark:text-blue-500">
-                Rp{{ number_format($total, 0, ',', '.') }}
-            </div>
-        </div>
     </div>
 </div>
 
