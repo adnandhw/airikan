@@ -19,7 +19,7 @@ class ProductResellerForm
     {
         return $schema->schema([
 
-            Grid::make(2)->schema([
+            Grid::make(["default" => 1, "sm" => 2])->schema([
 
                 // Nama Produk (Synced)
                 TextInput::make('name')
