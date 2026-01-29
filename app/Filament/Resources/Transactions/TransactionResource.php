@@ -40,7 +40,7 @@ class TransactionResource extends Resource
                         // 1. Header Card (ID & Status)
                         Schemas\Components\Section::make()
                             ->schema([
-                                Schemas\Components\Grid::make(["default" => 1, "sm" => 2])
+                                Schemas\Components\Grid::make(2)
                                     ->schema([
                                         Forms\Components\Placeholder::make('id_display')
                                             ->label('ID Transaksi')
@@ -77,7 +77,7 @@ class TransactionResource extends Resource
                         // 3. Info Pengiriman
                         Schemas\Components\Section::make('INFO PENGIRIMAN')
                             ->schema([
-                                Schemas\Components\Grid::make(["default" => 1, "sm" => 2])
+                                Schemas\Components\Grid::make(2)
                                     ->schema([
                                         Forms\Components\Placeholder::make('buyer_name')
                                             ->hiddenLabel()
