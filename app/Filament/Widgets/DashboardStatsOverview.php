@@ -28,12 +28,18 @@ class DashboardStatsOverview extends BaseWidget
             Stat::make('Penjualan Harian', 'Rp ' . number_format($dailySales, 0, ',', '.'))
                 ->description('Total penjualan hari ini')
                 ->descriptionIcon('heroicon-m-arrow-trending-up')
-                ->color('success'),
+                ->color('success')
+                ->url(\App\Filament\Resources\Transactions\TransactionResource::getUrl('index', [
+                    'tableFilters[periode][value]' => 'today',
+                ])),
 
             Stat::make('Penjualan Bulanan', 'Rp ' . number_format($monthlySales, 0, ',', '.'))
                 ->description('Total penjualan bulan ini')
                 ->descriptionIcon('heroicon-m-calendar')
-                ->color('primary'),
+                ->color('primary')
+                ->url(\App\Filament\Resources\Transactions\TransactionResource::getUrl('index', [
+                    'tableFilters[periode][value]' => 'this_month',
+                ])),
         ];
     }
 }

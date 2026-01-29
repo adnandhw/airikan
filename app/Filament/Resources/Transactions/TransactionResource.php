@@ -123,6 +123,13 @@ class TransactionResource extends Resource
                     ->label('Phone')
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: false),
+                Tables\Columns\TextColumn::make('produk_summary')
+                    ->label('Produk')
+                    ->getStateUsing(function ($record) {
+                        return collect($record->products)->pluck('name')->map(fn($name) => "• {$name}")->join("\n");
+                    })
+                    ->wrap()
+                    ->description(fn ($record) => count($record->products) . ' item'),
                 Tables\Columns\TextColumn::make('total_amount')
                     ->money('IDR')
                     ->sortable()
@@ -153,7 +160,31 @@ class TransactionResource extends Resource
                     ->sortable(),
             ])
             ->filters([
-                //
+                Tables\Filters\Filter::make('created_at')
+                    ->form([
+                        Forms\Components\DatePicker::make('created_from')->label('Dari Tanggal'),
+                        Forms\Components\DatePicker::make('created_until')->label('Sampai Tanggal'),
+                    ])
+                    ->query(function ($query, array $data) {
+                        return $query
+                            ->when($data['created_from'], fn ($query) => $query->where('created_at', '>=', $data['created_from']))
+                            ->when($data['created_until'], fn ($query) => $query->where('created_at', '<=', $data['created_until']));
+                    }),
+                Tables\Filters\SelectFilter::make('periode')
+                    ->options([
+                        'today' => 'Hari Ini',
+                        'this_month' => 'Bulan Ini',
+                    ])
+                    ->query(function ($query, array $data) {
+                        if ($data['value'] === 'today') {
+                            return $query->where('created_at', '>=', \Carbon\Carbon::today()->startOfDay())
+                                         ->where('created_at', '<=', \Carbon\Carbon::today()->endOfDay());
+                        }
+                        if ($data['value'] === 'this_month') {
+                            return $query->where('created_at', '>=', \Carbon\Carbon::now()->startOfMonth())
+                                         ->where('created_at', '<=', \Carbon\Carbon::now()->endOfMonth());
+                        }
+                    })
             ])
             ->actions([
                 EditAction::make(),
@@ -162,7 +193,8 @@ class TransactionResource extends Resource
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->defaultSort('created_at', 'desc');
     }
 
     public static function getRelations(): array
