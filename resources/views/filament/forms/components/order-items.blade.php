@@ -5,8 +5,8 @@
     @endphp
 
     {{-- Transaction Table with Forced Horizontal Scroll on Mobile --}}
-    <div class="overflow-x-auto w-full" style="-webkit-overflow-scrolling: touch;">
-        <table class="w-full text-sm text-left" style="min-width: 800px;">
+    <div class="overflow-x-auto w-full">
+        <table class="w-full text-sm text-left" style="table-layout: fixed; width: 100%; min-width: 600px;">
             <thead class="bg-gray-50 dark:bg-gray-800 text-gray-700 dark:text-gray-400 font-medium border-b dark:border-gray-700">
                 <tr>
                     <th scope="col" style="width: 35%; padding: 16px 32px; text-align: left;">Produk</th>
