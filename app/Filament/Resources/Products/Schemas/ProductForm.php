@@ -130,7 +130,7 @@ class ProductForm
             // Section Diskon
             Section::make('Diskon Produk')
                 ->schema([
-                    Grid::make(['default' => 1, 'sm' => 2])->schema([
+                    Grid::make(2)->schema([
                         TextInput::make('discount_percentage')
                             ->label('Persentase Diskon (%)')
                             ->numeric()

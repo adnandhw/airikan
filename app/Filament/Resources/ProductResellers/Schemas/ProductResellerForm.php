@@ -19,7 +19,7 @@ class ProductResellerForm
     {
         return $schema->schema([
 
-            Grid::make(['default' => 1, 'sm' => 2])->schema([
+            Grid::make(2)->schema([
 
                 // Nama Produk (Synced)
                 TextInput::make('name')
@@ -45,7 +45,7 @@ class ProductResellerForm
                 \Filament\Forms\Components\Toggle::make('is_active')
                     ->label('Tampilkan di Website?')
                     ->default(true)
-                    ->columnSpan(['default' => 1, 'sm' => 2]),
+                    ->columnSpan(2),
 
                 // Parent Product (Link for Stock Sync) - READ ONLY
                 Select::make('product_id')

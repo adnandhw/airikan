@@ -1,12 +1,11 @@
-<div class="rounded-xl border border-gray-200 shadow-sm dark:border-gray-700 bg-white dark:bg-gray-900 overflow-hidden">
+<div class="rounded-xl border border-gray-200 shadow-sm dark:border-gray-700 bg-white dark:bg-gray-900">
     @php
         $products = $getState() ?? [];
         $total = 0;
     @endphp
 
-    {{-- Transaction Table with Forced Horizontal Scroll on Mobile --}}
-    <div class="overflow-x-auto w-full">
-        <table class="w-full text-sm text-left" style="table-layout: fixed; width: 100%; min-width: 600px;">
+    <div style="overflow-x: auto; -webkit-overflow-scrolling: touch; width: 100%; border-radius: 0.75rem;">
+        <table style="width: 100%; min-width: 800px; text-align: left; font-size: 0.875rem; border-collapse: collapse;">
             <thead class="bg-gray-50 dark:bg-gray-800 text-gray-700 dark:text-gray-400 font-medium border-b dark:border-gray-700">
                 <tr>
                     <th scope="col" style="width: 35%; padding: 16px 32px; text-align: left;">Produk</th>
