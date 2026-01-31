@@ -6,8 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Models\Transaction;
 use App\Models\Product;
 use App\Models\ProductReseller;
+use App\Models\User;
+use App\Mail\OrderNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
 
 
 class TransactionController extends Controller
@@ -133,27 +137,20 @@ class TransactionController extends Controller
             'short_id' => strtoupper(substr($transaction->id, 0, 8))
         ]);
 
-        // Send Email Notification to Admin
+        // Send Email Notifications (Admin & Customer)
         try {
-            \Illuminate\Support\Facades\Mail::raw(
-                "Pesanan Baru Masuk!\n\n" .
-                "ID Transaksi: " . strtoupper(substr($transaction->id, 0, 8)) . "\n" .
-                "Pembeli: " . ($request->buyer_info['name'] ?? '-') . "\n" .
-                "No. HP: " . ($request->buyer_info['phone'] ?? '-') . "\n" .
-                "Alamat: " . ($request->buyer_info['address'] ?? '-') . "\n\n" .
-                "Detail Pesanan:\n" .
-                $productListText . "\n" .
-                "Subtotal: Rp" . number_format($calculatedTotal, 0, ',', '.') . "\n" .
-                "Ongkos Kirim (" . ($request->courier_name ?? 'Kurir') . "): Rp" . number_format($shippingCost, 0, ',', '.') . "\n" .
-                "Total Pembayaran (Server Validated): Rp" . number_format($totalPayment, 0, ',', '.') . "\n\n" .
-                "Silakan cek Admin Panel untuk detailnya.",
-                function ($message) {
-                    $message->to(['adnandhw@gmail.com', 'black.busted99@gmail.com'])
-                            ->subject('Notifikasi Pesanan Baru - Air Ikan Store');
-                }
-            );
+            $adminEmails = ['adnandhw@gmail.com', 'black.busted99@gmail.com'];
+            
+            // 1. Send to Admins
+            Mail::to($adminEmails)->send(new OrderNotification($transaction, true));
+
+            // 2. Send to Customer
+            $buyer = User::find($request->buyer_id);
+            if ($buyer && $buyer->email) {
+                Mail::to($buyer->email)->send(new OrderNotification($transaction, false));
+            }
         } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::error('Email notification failed: ' . $e->getMessage());
+            Log::error('Order notification email failed: ' . $e->getMessage());
         }
 
         return response()->json([
