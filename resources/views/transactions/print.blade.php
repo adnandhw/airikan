@@ -107,8 +107,19 @@
                 @php
                     $lineTotal = $item['price'] * $item['quantity'];
                     $subtotal += $lineTotal;
-                    $itemWeight = $item['weight'] ?? 0;
-                    $lineWeight = $itemWeight * $item['quantity'];
+                    
+                    $weight = $item['weight'] ?? 0;
+                    $qty = $item['quantity'] ?? 0;
+                    
+                    // Check reseller status
+                    $isReseller = ($item['is_reseller'] ?? false) || (stripos($item['name'] ?? '', '[reseller]') !== false);
+                    
+                    if ($isReseller) {
+                        $lineWeight = ($weight / 10) * $qty;
+                    } else {
+                        $lineWeight = $weight * $qty;
+                    }
+                    
                     $totalWeight += $lineWeight;
                 @endphp
                 <tr>
@@ -117,8 +128,8 @@
                         @if(isset($item['variant']))
                             <br><small class="text-gray-500">({{ $item['variant'] }})</small>
                         @endif
-                        @if($itemWeight > 0)
-                            <br><small style="color: #666;">Berat: {{ $itemWeight }} g @if(isset($item['is_reseller']) && $item['is_reseller']) / {{ $item['quantity'] * 10 }} pcs @endif</small>
+                        @if($weight > 0)
+                            <br><small style="color: #666;">Berat: {{ $weight }} g @if($isReseller) / 10 pcs @endif</small>
                         @endif
                     </td>
                     <td class="text-right">{{ $item['quantity'] }}</td>

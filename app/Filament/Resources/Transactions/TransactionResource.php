@@ -107,7 +107,32 @@ class TransactionResource extends Resource
                                     ->schema([
                                         Forms\Components\Placeholder::make('total_weight')
                                             ->label('Berat Total')
-                                            ->content(fn ($record) => $record->total_weight ? ($record->total_weight < 1000 ? $record->total_weight . ' g' : ($record->total_weight / 1000) . ' kg') : '-'),
+                                            ->content(function ($record) {
+                                                if (!$record) return '-';
+                                                
+                                                // Recalculate weight to ensure it matches cart logic
+                                                $calculatedWeight = 0;
+                                                $products = $record->detail['products'] ?? $record->products ?? [];
+                                                
+                                                foreach ($products as $item) {
+                                                    $weight = $item['weight'] ?? 0;
+                                                    $qty = $item['quantity'] ?? 0;
+                                                    
+                                                    // Check for reseller
+                                                    $isReseller = ($item['is_reseller'] ?? false) || 
+                                                                 (stripos($item['name'] ?? '', '[reseller]') !== false);
+                                                    
+                                                    if ($isReseller) {
+                                                        $calculatedWeight += ($weight / 10) * $qty;
+                                                    } else {
+                                                        $calculatedWeight += $weight * $qty;
+                                                    }
+                                                }
+                                                
+                                                return $calculatedWeight < 1000 
+                                                    ? $calculatedWeight . ' g' 
+                                                    : number_format($calculatedWeight / 1000, 2, ',', '.') . ' kg';
+                                            }),
                                     ])
                                     ->extraAttributes(['class' => 'mt-4 pt-4 border-t border-gray-100']),
                             ])
