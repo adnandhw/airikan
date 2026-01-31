@@ -9,9 +9,15 @@
             font-family: Arial, sans-serif;
             font-size: 14px;
             color: #333;
-            max-width: 80mm; /* Struk style width */
+            max-width: 80mm; /* Struk style width for desktop view/print simulation */
             margin: 0 auto;
             padding: 10px;
+        }
+        @media screen and (max-width: 480px) {
+            body {
+                max-width: 100%; /* Full width on mobile */
+                padding: 15px;
+            }
         }
         h3 {
             margin: 5px 0;
@@ -139,8 +145,14 @@
                 @endforeach
                 
                 <tr style="border-top: 1px solid #ddd;">
-                    <td colspan="3" class="text-right" style="padding-top: 10px;">Subtotal Produk</td>
-                    <td class="text-right" style="padding-top: 10px;">{{ number_format($subtotal, 0, ',', '.') }}</td>
+                    <td colspan="3" class="text-right" style="padding-top: 10px;">Berat Total</td>
+                    <td class="text-right" style="padding-top: 10px;">
+                        {{ $totalWeight < 1000 ? $totalWeight . ' g' : number_format($totalWeight / 1000, 2, ',', '.') . ' kg' }}
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="3" class="text-right">Subtotal Produk</td>
+                    <td class="text-right">{{ number_format($subtotal, 0, ',', '.') }}</td>
                 </tr>
                 <tr>
                     <td colspan="3" class="text-right">Biaya Pengiriman ({{ $transaction->courier_name ?? '-' }})</td>
@@ -149,11 +161,6 @@
                 <tr class="total-row">
                     <td colspan="3" class="text-right">Total Pembayaran</td>
                     <td class="text-right">Rp{{ number_format($subtotal + ($transaction->shipping_cost ?? 0), 0, ',', '.') }}</td>
-                </tr>
-                <tr>
-                    <td colspan="4" style="text-align: center; font-size: 11px; padding-top: 10px; color: #666;">
-                        Berat Total: {{ $totalWeight < 1000 ? $totalWeight . ' g' : ($totalWeight / 1000) . ' kg' }}
-                    </td>
                 </tr>
             </tbody>
         </table>

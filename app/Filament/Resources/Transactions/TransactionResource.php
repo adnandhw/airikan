@@ -103,38 +103,7 @@ class TransactionResource extends Resource
                                     ->content(fn ($record) => $record->buyer_info['address'] ?? '-')
                                     ->icon('heroicon-m-map-pin'),
 
-                                Schemas\Components\Grid::make(['default' => 2])
-                                    ->schema([
-                                        Forms\Components\Placeholder::make('total_weight')
-                                            ->label('Berat Total')
-                                            ->content(function ($record) {
-                                                if (!$record) return '-';
-                                                
-                                                // Recalculate weight to ensure it matches cart logic
-                                                $calculatedWeight = 0;
-                                                $products = $record->detail['products'] ?? $record->products ?? [];
-                                                
-                                                foreach ($products as $item) {
-                                                    $weight = $item['weight'] ?? 0;
-                                                    $qty = $item['quantity'] ?? 0;
-                                                    
-                                                    // Check for reseller
-                                                    $isReseller = ($item['is_reseller'] ?? false) || 
-                                                                 (stripos($item['name'] ?? '', '[reseller]') !== false);
-                                                    
-                                                    if ($isReseller) {
-                                                        $calculatedWeight += ($weight / 10) * $qty;
-                                                    } else {
-                                                        $calculatedWeight += $weight * $qty;
-                                                    }
-                                                }
-                                                
-                                                return $calculatedWeight < 1000 
-                                                    ? $calculatedWeight . ' g' 
-                                                    : number_format($calculatedWeight / 1000, 2, ',', '.') . ' kg';
-                                            }),
-                                    ])
-                                    ->extraAttributes(['class' => 'mt-4 pt-4 border-t border-gray-100']),
+                                    // Total Weight moved to order items footer
                             ])
                             ->compact(),
 

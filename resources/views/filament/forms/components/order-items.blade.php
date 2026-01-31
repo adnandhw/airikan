@@ -84,8 +84,30 @@
                             }
                             $shipping_cost = $record ? $record->shipping_cost : 0;
                             $courier_name = $record ? $record->courier_name : '';
+
+                            // Calculate Total Weight
+                            $calculatedWeight = 0;
+                            foreach ($products as $product) {
+                                $weight = $product['weight'] ?? 0;
+                                $qty = $product['quantity'] ?? 0;
+                                $isReseller = ($product['is_reseller'] ?? false) || (stripos($product['name'] ?? '', '[reseller]') !== false);
+                                
+                                if ($isReseller) {
+                                    $calculatedWeight += ($weight / 10) * $qty;
+                                } else {
+                                    $calculatedWeight += $weight * $qty;
+                                }
+                            }
                         @endphp
                         <div style="display: flex; flex-direction: column; gap: 12px; min-width: 250px; margin-left: auto;">
+                            {{-- Total Weight --}}
+                            <div style="display: flex; justify-content: space-between; align-items: center; color: #2563eb; font-size: 0.875rem;">
+                                <span>Berat Total</span>
+                                <span style="font-weight: 500; color: #2563eb;" class="dark:text-blue-400">
+                                    {{ $calculatedWeight < 1000 ? $calculatedWeight . ' g' : number_format($calculatedWeight / 1000, 2, ',', '.') . ' kg' }}
+                                </span>
+                            </div>
+
                             {{-- Subtotal --}}
                             <div style="display: flex; justify-content: space-between; align-items: center; color: #2563eb; font-size: 0.875rem;">
                                 <span>Subtotal Produk</span>
