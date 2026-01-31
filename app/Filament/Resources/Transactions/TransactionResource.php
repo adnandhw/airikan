@@ -56,6 +56,11 @@ class TransactionResource extends Resource
                                             ])
                                             ->native(false)
                                             ->selectablePlaceholder(false),
+
+                                        Forms\Components\TextInput::make('shipping_receipt_number')
+                                            ->label('Nomor Resi Pengiriman')
+                                            ->placeholder('Masukkan nomor resi...')
+                                            ->maxLength(255),
                                     ]),
                                     Forms\Components\Placeholder::make('created_at')
                                         ->hiddenLabel()
@@ -155,6 +160,10 @@ class TransactionResource extends Resource
                         'reject' => 'danger',
                         default => 'gray',
                     }),
+                Tables\Columns\TextColumn::make('shipping_receipt_number')
+                    ->label('No. Resi')
+                    ->searchable()
+                    ->toggleable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable(),

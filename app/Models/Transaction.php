@@ -33,5 +33,6 @@ class Transaction extends Model
         'payment_proof', // path/url to image
         'short_id', // 8-char uppercase ID for easy searching
         'is_stock_deducted',
+        'shipping_receipt_number',
     ];
 }
