@@ -47,20 +47,22 @@ class TransactionResource extends Resource
                                             ->content(fn ($record) => '#' . $record->short_id)
                                             ->extraAttributes(['class' => 'text-xl font-bold']),
                                         
-                                        Forms\Components\Select::make('status')
-                                            ->options([
-                                                'pending' => 'Pending',
-                                                'paid' => 'Paid (Menunggu Konfirmasi)',
-                                                'approve' => 'Approve (Selesai)',
-                                                'reject' => 'Pembayaran Ditolak',
-                                            ])
-                                            ->native(false)
-                                            ->selectablePlaceholder(false),
+                                        Forms\Components\Group::make([
+                                            Forms\Components\Select::make('status')
+                                                ->options([
+                                                    'pending' => 'Pending',
+                                                    'paid' => 'Paid (Menunggu Konfirmasi)',
+                                                    'approve' => 'Approve (Selesai)',
+                                                    'reject' => 'Pembayaran Ditolak',
+                                                ])
+                                                ->native(false)
+                                                ->selectablePlaceholder(false),
 
-                                        Forms\Components\TextInput::make('shipping_receipt_number')
-                                            ->label('Nomor Resi Pengiriman')
-                                            ->placeholder('Masukkan nomor resi...')
-                                            ->maxLength(255),
+                                            Forms\Components\TextInput::make('shipping_receipt_number')
+                                                ->label('Nomor Resi Pengiriman')
+                                                ->placeholder('Masukkan nomor resi...')
+                                                ->maxLength(255),
+                                        ]),
                                     ]),
                                     Forms\Components\Placeholder::make('created_at')
                                         ->hiddenLabel()
