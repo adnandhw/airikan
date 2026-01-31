@@ -37,6 +37,16 @@
                                 <div>
                                     <div class="text-lg font-bold text-gray-900 dark:text-white line-clamp-2">{{ $product['name'] ?? '-' }}</div>
                                     <div class="text-sm text-gray-500 dark:text-gray-400 mt-1">{{ $type }}</div>
+                                    @if(isset($product['weight']) && $product['weight'] > 0)
+                                        <div style="display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; margin-top: 4px; border-radius: 6px; background-color: #f3f4f6; color: #4b5563; font-size: 0.75rem; border: 1px solid #e5e7eb;">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                                                <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                                                <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                                            </svg>
+                                            <span style="font-weight: 500;">{{ $product['weight'] }} g @if(isset($product['is_reseller']) && $product['is_reseller']) / {{ $product['quantity'] * ($item['quantity'] ?? 1) }} pcs @endif</span>
+                                        </div>
+                                    @endif
                                 </div>
                             </div>
                         </td>
