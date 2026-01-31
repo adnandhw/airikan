@@ -102,6 +102,23 @@ class TransactionResource extends Resource
                                     ->hiddenLabel()
                                     ->content(fn ($record) => $record->buyer_info['address'] ?? '-')
                                     ->icon('heroicon-m-map-pin'),
+
+                                Schemas\Components\Grid::make(['default' => 3])
+                                    ->schema([
+                                        Forms\Components\Placeholder::make('courier_name')
+                                            ->label('Kurir')
+                                            ->content(fn ($record) => $record->courier_name ?? '-')
+                                            ->extraAttributes(['class' => 'font-semibold']),
+                                        
+                                        Forms\Components\Placeholder::make('shipping_cost')
+                                            ->label('Biaya Pengiriman')
+                                            ->content(fn ($record) => $record->shipping_cost ? 'Rp ' . number_format($record->shipping_cost, 0, ',', '.') : 'Rp 0'),
+                                        
+                                        Forms\Components\Placeholder::make('total_weight')
+                                            ->label('Berat Total')
+                                            ->content(fn ($record) => $record->total_weight ? ($record->total_weight < 1000 ? $record->total_weight . ' g' : ($record->total_weight / 1000) . ' kg') : '-'),
+                                    ])
+                                    ->extraAttributes(['class' => 'mt-4 pt-4 border-t border-gray-100']),
                             ])
                             ->compact(),
 
@@ -167,6 +184,14 @@ class TransactionResource extends Resource
                     ->label('No. Resi')
                     ->searchable()
                     ->toggleable(),
+                Tables\Columns\TextColumn::make('courier_name')
+                    ->label('Kurir')
+                    ->searchable()
+                    ->toggleable(),
+                Tables\Columns\TextColumn::make('shipping_cost')
+                    ->label('Ongkir')
+                    ->money('IDR')
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable(),
