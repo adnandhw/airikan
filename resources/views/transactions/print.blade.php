@@ -5,17 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cetak Transaksi #{{ $transaction->short_id }}</title>
     <style>
+        * {
+            box-sizing: border-box;
+        }
         body {
             font-family: Arial, sans-serif;
             font-size: 14px;
             color: #333;
-            max-width: 80mm; /* Struk style width for desktop view/print simulation */
+            width: 100%;
+            max-width: 800px; /* Standard A4/Letter width perception on screen */
             margin: 0 auto;
-            padding: 10px;
+            padding: 20px;
         }
         @media screen and (max-width: 480px) {
             body {
-                max-width: 100%; /* Full width on mobile */
                 padding: 15px;
             }
         }
