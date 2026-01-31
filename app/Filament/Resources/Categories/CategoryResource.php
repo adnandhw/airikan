@@ -25,7 +25,6 @@ class CategoryResource extends Resource
 
     protected static ?int $navigationSort = 2;
 
-    // Judul record di UI
     protected static ?string $recordTitleAttribute = 'name';
 
     public static function getGlobalSearchEloquentQuery(): \Illuminate\Database\Eloquent\Builder
@@ -44,7 +43,6 @@ class CategoryResource extends Resource
         return $query;
     }
 
-    /* ===================== FORM ===================== */
     public static function form(Schema $schema): Schema
     {
         return $schema->schema([
@@ -82,7 +80,6 @@ class CategoryResource extends Resource
         ]);
     }
 
-    /* ===================== TABLE ===================== */
     public static function table(Tables\Table $table): Tables\Table
     {
         return $table

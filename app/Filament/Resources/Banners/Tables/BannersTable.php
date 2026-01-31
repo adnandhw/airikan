@@ -16,7 +16,7 @@ class BannersTable
                     ->searchable()
                     ->label('Banner')
                     ->size(200)
-                    ->disk('public')   // ambil dari storage/app/public
+                    ->disk('public')
                     ->columnSpanFull(),
             ])
             ->filters([])

@@ -19,13 +19,11 @@ class ProductForm
 
             Grid::make(2)->schema([
 
-                // Nama Produk
                 TextInput::make('name')
                     ->label('Nama Produk')
                     ->required()
                     ->maxLength(150),
 
-                // Kategori (RELASI MongoDB)
                 Select::make('category_id')
                     ->label('Kategori')
                     ->options(
@@ -38,7 +36,6 @@ class ProductForm
                     ->live()
                     ->afterStateUpdated(fn ($set) => $set('type', null)),
 
-                // Jenis / Varian (Dependent Dropdown from Category embedded types)
                 Select::make('type')
                     ->label('Jenis / Varian')
                     ->options(function ($get) {
@@ -59,12 +56,9 @@ class ProductForm
                         if (is_string($types)) {
                             $decoded = json_decode($types, true);
                             
-                            // If it decoded to an array, use it
                             if (is_array($decoded)) {
                                 $types = $decoded;
                             } else {
-                                // Otherwise treat as raw string (comma-separated or single)
-                                // Remove quotes if present (sometimes happened in old migrations)
                                 $clean = trim($types, '"\'');
                                 if (str_contains($clean, ',')) {
                                     $types = array_map('trim', explode(',', $clean));
@@ -78,8 +72,7 @@ class ProductForm
                              return [];
                         }
 
-                        // Ensure values are strings and keys match values
-                        $types = array_filter($types); // Remove empty
+                        $types = array_filter($types);
                         if (empty($types)) return [];
                         
                         return array_combine($types, $types);
@@ -88,22 +81,18 @@ class ProductForm
                     ->required()
                     ->live(),
 
-                // Harga
                 TextInput::make('price')
                     ->label('Harga')
                     ->numeric()
                     ->prefix('Rp')
                     ->required(),
 
-                // Stok
                 TextInput::make('stock')
                     ->label('Stok')
                     ->numeric()
                     ->minValue(0)
                     ->required(),
 
-                // Upload banyak gambar
-                // Upload gambar
                 FileUpload::make('image')
                     ->label('Foto Produk')
                     ->image()
@@ -113,21 +102,26 @@ class ProductForm
                     ->imagePreviewHeight('150')
                     ->required(),
 
-                // Ukuran (misal: 15cm)
                 TextInput::make('size')
                     ->label('Ukuran')
                     ->placeholder('Contoh: 15cm')
                     ->maxLength(50),
 
+                TextInput::make('weight')
+                    ->label('Berat (gram)')
+                    ->numeric()
+                    ->placeholder('Contoh: 1000')
+                    ->suffix('gram')
+                    ->required()
+                    ->default(1000),
+
             ]),
 
-            // Deskripsi
             Textarea::make('description')
                 ->label('Deskripsi')
                 ->rows(3)
                 ->columnSpanFull(),
 
-            // Section Diskon
             Section::make('Diskon Produk')
                 ->schema([
                     Grid::make(2)->schema([

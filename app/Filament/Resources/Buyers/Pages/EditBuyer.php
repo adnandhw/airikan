@@ -14,7 +14,6 @@ class EditBuyer extends EditRecord
 
         if ($record->wasChanged('reseller_status') && $record->reseller_status === 'approved') {
             $phone = $record->phone;
-            // Normalize phone (replace leading 0 with 62)
             if (str_starts_with($phone, '0')) {
                 $phone = '62' . substr($phone, 1);
             }

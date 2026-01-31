@@ -16,19 +16,14 @@ use UnitEnum;
 
 class ProductResource extends Resource
 {
-    // Model
     protected static ?string $model = Product::class;
 
-    // Icon sidebar (Filament v3)
     protected static BackedEnum|string|null $navigationIcon = 'heroicon-o-rectangle-stack';
 
-    // Group disamakan dengan Category & Banner
     protected static UnitEnum|string|null $navigationGroup = null;
 
     protected static ?int $navigationSort = 3;
 
-    // Title record
-    // Title record
     protected static ?string $recordTitleAttribute = 'name';
 
     public static function getGlobalSearchEloquentQuery(): \Illuminate\Database\Eloquent\Builder
@@ -47,25 +42,21 @@ class ProductResource extends Resource
         return $query;
     }
 
-    // Form
     public static function form(Schema $schema): Schema
     {
         return ProductForm::configure($schema);
     }
 
-    // Table
     public static function table(Table $table): Table
     {
         return ProductsTable::configure($table);
     }
 
-    // Relations (kosong dulu)
     public static function getRelations(): array
     {
         return [];
     }
 
-    // Pages
     public static function getPages(): array
     {
         return [
