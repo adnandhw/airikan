@@ -24,7 +24,6 @@ class ProductReseller extends Model
         'image',
         'weight',
         'stock',
-        'weight',
         'is_active', // Visibility toggle
         'tier_pricing',
     ];
