@@ -99,22 +99,50 @@
                 </tr>
             </thead>
             <tbody>
+                @php
+                    $subtotal = 0;
+                    $totalWeight = 0;
+                @endphp
                 @foreach($transaction->products as $item)
+                @php
+                    $lineTotal = $item['price'] * $item['quantity'];
+                    $subtotal += $lineTotal;
+                    $itemWeight = $item['weight'] ?? 0;
+                    $lineWeight = $itemWeight * $item['quantity'];
+                    $totalWeight += $lineWeight;
+                @endphp
                 <tr>
                     <td>
                         {{ $item['name'] }}
                         @if(isset($item['variant']))
                             <br><small class="text-gray-500">({{ $item['variant'] }})</small>
                         @endif
+                        @if($itemWeight > 0)
+                            <br><small style="color: #666;">Berat: {{ $itemWeight }} g @if(isset($item['is_reseller']) && $item['is_reseller']) / {{ $item['quantity'] * 10 }} pcs @endif</small>
+                        @endif
                     </td>
                     <td class="text-right">{{ $item['quantity'] }}</td>
                     <td class="text-right">{{ number_format($item['price'], 0, ',', '.') }}</td>
-                    <td class="text-right">{{ number_format($item['price'] * $item['quantity'], 0, ',', '.') }}</td>
+                    <td class="text-right">{{ number_format($lineTotal, 0, ',', '.') }}</td>
                 </tr>
                 @endforeach
+                
+                <tr style="border-top: 1px solid #ddd;">
+                    <td colspan="3" class="text-right" style="padding-top: 10px;">Subtotal Produk</td>
+                    <td class="text-right" style="padding-top: 10px;">{{ number_format($subtotal, 0, ',', '.') }}</td>
+                </tr>
+                <tr>
+                    <td colspan="3" class="text-right">Biaya Pengiriman ({{ $transaction->courier_name ?? '-' }})</td>
+                    <td class="text-right">{{ number_format($transaction->shipping_cost ?? 0, 0, ',', '.') }}</td>
+                </tr>
                 <tr class="total-row">
                     <td colspan="3" class="text-right">Total Pembayaran</td>
-                    <td class="text-right">Rp{{ number_format($transaction->total_amount, 0, ',', '.') }}</td>
+                    <td class="text-right">Rp{{ number_format($subtotal + ($transaction->shipping_cost ?? 0), 0, ',', '.') }}</td>
+                </tr>
+                <tr>
+                    <td colspan="4" style="text-align: center; font-size: 11px; padding-top: 10px; color: #666;">
+                        Berat Total: {{ $totalWeight < 1000 ? $totalWeight . ' g' : ($totalWeight / 1000) . ' kg' }}
+                    </td>
                 </tr>
             </tbody>
         </table>
