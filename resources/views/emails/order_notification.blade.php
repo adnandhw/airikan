@@ -71,7 +71,7 @@
 
             <div class="total-section">
                 <p><strong>Subtotal:</strong> Rp{{ number_format($transaction->total_amount, 0, ',', '.') }}</p>
-                <p><strong>Ongkos Kirim:</strong> Rp{{ number_format($transaction->shipping_cost, 0, ',', '.') }}</p>
+                <p><strong>Biaya Pengiriman:</strong> Rp{{ number_format($transaction->shipping_cost, 0, ',', '.') }}</p>
                 <h2 style="color: #0d6efd;">Total: Rp{{ number_format($transaction->total_payment, 0, ',', '.') }}</h2>
             </div>
             
