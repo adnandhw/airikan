@@ -109,11 +109,12 @@ class ProductForm
 
                 TextInput::make('weight')
                     ->label('Berat (Gram)')
-                    ->placeholder('Contoh: 500')
                     ->numeric()
+                    ->placeholder('Contoh: 1000')
+                    ->suffix('Gram')
                     ->minValue(0)
                     ->required()
-                    ->suffix('Gram'),
+                    ->default(1000),
 
             ]),
 

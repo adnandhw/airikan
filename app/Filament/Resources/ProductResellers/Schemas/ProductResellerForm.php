@@ -98,6 +98,7 @@ class ProductResellerForm
                     ->disabled()
                     ->dehydrated(false)
                     ->numeric()
+                    ->minValue(0)
                     ->suffix('Gram'),
 
                 Forms\Components\Repeater::make('tier_pricing')

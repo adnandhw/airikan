@@ -24,10 +24,12 @@ class Product extends Model
         'image',
         'stock',
         'slug',
+        'weight',
         'discount_percentage',
         'discount_duration',
         'discount_start_date',
         'discount_end_date',
+        'weight',
     ];
 
     protected static function booted()
