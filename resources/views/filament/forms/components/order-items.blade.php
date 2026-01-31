@@ -68,26 +68,39 @@
                     <td colspan="2" style="padding: 24px 32px; text-align: right;">
                         @php
                             $record = $getRecord();
+                            // Fallback if getRecord() is null (happens in some Filament contexts)
+                            if (!$record && isset($this) && isset($this->record)) {
+                                $record = $this->record;
+                            }
                             $shipping_cost = $record ? $record->shipping_cost : 0;
                             $courier_name = $record ? $record->courier_name : '';
                         @endphp
-                        <div class="flex flex-col gap-2">
-                            <div class="flex justify-between items-center text-sm text-gray-500">
+                        <div style="display: flex; flex-direction: column; gap: 12px; min-width: 250px; margin-left: auto;">
+                            {{-- Subtotal --}}
+                            <div style="display: flex; justify-content: space-between; align-items: center; color: #6b7280; font-size: 0.875rem;">
                                 <span>Subtotal Produk</span>
-                                <span class="font-medium text-gray-900 dark:text-white">Rp{{ number_format($total, 0, ',', '.') }}</span>
+                                <span style="font-weight: 500; color: #111827;" class="dark:text-white">Rp{{ number_format($total, 0, ',', '.') }}</span>
                             </div>
+
+                            {{-- Shipping --}}
                             @if($shipping_cost > 0)
-                            <div class="flex justify-between items-center text-sm text-gray-500">
-                                <span class="flex items-center gap-1">
-                                    Biaya Pengiriman
-                                    <span class="px-1.5 py-0.5 rounded-md bg-gray-100 dark:bg-gray-700 text-[10px] font-bold uppercase tracking-tight">{{ $courier_name }}</span>
-                                </span>
-                                <span class="font-medium text-gray-900 dark:text-white">Rp{{ number_format($shipping_cost, 0, ',', '.') }}</span>
+                            <div style="display: flex; justify-content: space-between; align-items: center; color: #6b7280; font-size: 0.875rem;">
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <span>Biaya Pengiriman</span>
+                                    <span style="padding: 2px 6px; border-radius: 4px; background-color: #f3f4f6; color: #374151; font-size: 10px; font-weight: 700; text-transform: uppercase;" class="dark:bg-gray-700 dark:text-gray-300">
+                                        {{ $courier_name }}
+                                    </span>
+                                </div>
+                                <span style="font-weight: 500; color: #111827;" class="dark:text-white">Rp{{ number_format($shipping_cost, 0, ',', '.') }}</span>
                             </div>
                             @endif
-                            <div class="flex justify-between items-center pt-3 mt-1 border-t dark:border-gray-700">
-                                <span class="text-xs font-bold uppercase tracking-wider text-gray-500">Total Pembayaran</span>
-                                <span class="text-3xl font-extrabold text-blue-600 dark:text-blue-500">Rp{{ number_format($total + $shipping_cost, 0, ',', '.') }}</span>
+
+                            {{-- Total --}}
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 16px; margin-top: 4px; border-top: 1px solid #e5e7eb;" class="dark:border-gray-700">
+                                <span style="font-size: 0.75rem; font-weight: 700; color: #6b7280; text-transform: uppercase; letter-spacing: 0.025em;">Total Pembayaran</span>
+                                <span style="font-size: 1.875rem; font-weight: 800; color: #2563eb;" class="dark:text-blue-500">
+                                    Rp{{ number_format($total + $shipping_cost, 0, ',', '.') }}
+                                </span>
                             </div>
                         </div>
                     </td>
