@@ -35,6 +35,7 @@ class ProductController extends Controller
             'type' => 'nullable|string',
             'price' => 'nullable|numeric',
             'stock' => 'nullable|integer',
+            'weight' => 'nullable|integer',
             'image' => 'nullable|image|max:5120',
         ]);
 
@@ -61,6 +62,7 @@ class ProductController extends Controller
             'type' => 'nullable|string',
             'price' => 'nullable|numeric',
             'stock' => 'nullable|integer',
+            'weight' => 'nullable|integer',
             'image' => 'nullable|image|max:5120',
         ]);
 

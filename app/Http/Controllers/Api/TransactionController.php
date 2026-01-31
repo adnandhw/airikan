@@ -99,10 +99,11 @@ class TransactionController extends Controller
             $currentSubtotal = $effectivePrice * $qty;
             $calculatedTotal += $currentSubtotal;
 
-            // Reconstruct item with server-side price
+            // Reconstruct item with server-side price and weight
             $sanitizedItem = [
                 'product_id' => $productId,
                 'name' => $productName,
+                'weight' => $resellerProduct ? $resellerProduct->weight : ($mainProduct ? $mainProduct->weight : 0),
                 'image_url' => $item['image_url'] ?? null,
                 'type' => $item['type'] ?? 'product',
                 'price' => $effectivePrice,
@@ -165,7 +166,35 @@ class TransactionController extends Controller
     {
         $transactions = Transaction::where('buyer_id', $userId)
                                    ->orderBy('created_at', 'desc')
-                                   ->get();
+                                   ->get()
+                                   ->map(function ($transaction) {
+                                       $products = $transaction->products;
+                                       $needsUpdating = false;
+
+                                       foreach ($products as &$item) {
+                                           // If weight is missing, try to find it
+                                           if (!isset($item['weight'])) {
+                                               $isReseller = isset($item['is_reseller']) && $item['is_reseller'];
+                                               $productId = $item['product_id'];
+
+                                               if ($isReseller) {
+                                                   $p = ProductReseller::find($productId);
+                                                   $item['weight'] = $p ? $p->weight : 0;
+                                               } else {
+                                                   $p = Product::find($productId);
+                                                   $item['weight'] = $p ? $p->weight : 0;
+                                               }
+                                               $needsUpdating = true;
+                                           }
+                                       }
+
+                                       if ($needsUpdating) {
+                                           $transaction->products = $products;
+                                           // Optional: Save it back to DB to "fix" it permanently, but map is fine for now
+                                       }
+
+                                       return $transaction;
+                                   });
 
         return response()->json([
             'success' => true,
