@@ -47,7 +47,7 @@ class TransactionResource extends Resource
                                             ->content(fn ($record) => '#' . $record->short_id)
                                             ->extraAttributes(['class' => 'text-xl font-bold']),
                                         
-                                        Forms\Components\Group::make()
+                                        Schemas\Components\Group::make()
                                             ->schema([
                                                 Forms\Components\Select::make('status')
                                                     ->options([
