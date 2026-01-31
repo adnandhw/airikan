@@ -66,8 +66,30 @@
                 <tr>
                     <td colspan="2"></td>
                     <td colspan="2" style="padding: 24px 32px; text-align: right;">
-                        <div class="text-xs text-gray-500 uppercase tracking-wider mb-1">Total Pembayaran</div>
-                        <div class="text-3xl font-extrabold text-blue-600 dark:text-blue-500">Rp{{ number_format($total, 0, ',', '.') }}</div>
+                        @php
+                            $record = $getRecord();
+                            $shipping_cost = $record ? $record->shipping_cost : 0;
+                            $courier_name = $record ? $record->courier_name : '';
+                        @endphp
+                        <div class="flex flex-col gap-2">
+                            <div class="flex justify-between items-center text-sm text-gray-500">
+                                <span>Subtotal Produk</span>
+                                <span class="font-medium text-gray-900 dark:text-white">Rp{{ number_format($total, 0, ',', '.') }}</span>
+                            </div>
+                            @if($shipping_cost > 0)
+                            <div class="flex justify-between items-center text-sm text-gray-500">
+                                <span class="flex items-center gap-1">
+                                    Biaya Pengiriman
+                                    <span class="px-1.5 py-0.5 rounded-md bg-gray-100 dark:bg-gray-700 text-[10px] font-bold uppercase tracking-tight">{{ $courier_name }}</span>
+                                </span>
+                                <span class="font-medium text-gray-900 dark:text-white">Rp{{ number_format($shipping_cost, 0, ',', '.') }}</span>
+                            </div>
+                            @endif
+                            <div class="flex justify-between items-center pt-3 mt-1 border-t dark:border-gray-700">
+                                <span class="text-xs font-bold uppercase tracking-wider text-gray-500">Total Pembayaran</span>
+                                <span class="text-3xl font-extrabold text-blue-600 dark:text-blue-500">Rp{{ number_format($total + $shipping_cost, 0, ',', '.') }}</span>
+                            </div>
+                        </div>
                     </td>
                 </tr>
             </tfoot>
