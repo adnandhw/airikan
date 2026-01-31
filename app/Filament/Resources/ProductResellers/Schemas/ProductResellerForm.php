@@ -93,6 +93,13 @@ class ProductResellerForm
                     ->placeholder('Contoh: 15cm')
                     ->maxLength(50),
 
+                TextInput::make('weight')
+                    ->label('Berat (Gram) (Sinkron)')
+                    ->disabled()
+                    ->dehydrated(false)
+                    ->numeric()
+                    ->minValue(0),
+
                 Forms\Components\Repeater::make('tier_pricing')
                     ->label('Atur Harga Berdasarkan Jumlah')
                     ->schema([

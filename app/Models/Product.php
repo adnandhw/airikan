@@ -23,6 +23,7 @@ class Product extends Model
         'image',
         'stock',
         'slug',
+        'weight',
         'discount_percentage',
         'discount_duration',
         'discount_start_date',
