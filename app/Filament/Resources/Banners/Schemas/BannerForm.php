@@ -14,11 +14,11 @@ class BannerForm
                 FileUpload::make('image')
                     ->label('Banner Image')
                     ->image()
-                    ->directory('banner') // semua file akan masuk storage/app/public/banner
+                    ->directory('banner')
                     ->disk('public')
                     ->visibility('public')
                     ->required()
-                    ->preserveFilenames() // agar nama file tidak berubah
+                    ->preserveFilenames()
                     ->maxSize(2048),
             ]);
     }

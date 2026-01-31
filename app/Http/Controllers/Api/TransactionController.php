@@ -19,7 +19,10 @@ class TransactionController extends Controller
             'buyer_id' => 'required',
             'buyer_info' => 'required',
             'products' => 'required|array',
-            // 'total_amount' => 'required|numeric', // We ignore this now
+            'shipping_cost' => 'nullable|numeric',
+            'courier_name' => 'nullable|string',
+            'total_weight' => 'nullable|numeric',
+            'distance' => 'nullable|numeric',
         ]);
 
         if ($validator->fails()) {
@@ -108,11 +111,19 @@ class TransactionController extends Controller
             $productListText .= "- {$productName} (x{$qty}) - Rp{$formattedPrice}\n";
         }
 
+        $shippingCost = (float) ($request->shipping_cost ?? 0);
+        $totalPayment = $calculatedTotal + $shippingCost;
+
         $transaction = Transaction::create([
             'buyer_id' => $request->buyer_id,
             'buyer_info' => $request->buyer_info,
             'products' => $sanitizedProducts,
             'total_amount' => $calculatedTotal, // Trust Server Calculation
+            'shipping_cost' => $shippingCost,
+            'courier_name' => $request->courier_name,
+            'total_weight' => $request->total_weight ?? 0,
+            'distance' => $request->distance ?? 0,
+            'total_payment' => $totalPayment,
             'status' => 'pending',
             'payment_proof' => null
         ]);
@@ -132,7 +143,9 @@ class TransactionController extends Controller
                 "Alamat: " . ($request->buyer_info['address'] ?? '-') . "\n\n" .
                 "Detail Pesanan:\n" .
                 $productListText . "\n" .
-                "Total Pembayaran (Server Validated): Rp" . number_format($calculatedTotal, 0, ',', '.') . " (Belum termasuk Ongkir)\n\n" .
+                "Subtotal: Rp" . number_format($calculatedTotal, 0, ',', '.') . "\n" .
+                "Ongkos Kirim (" . ($request->courier_name ?? 'Kurir') . "): Rp" . number_format($shippingCost, 0, ',', '.') . "\n" .
+                "Total Pembayaran (Server Validated): Rp" . number_format($totalPayment, 0, ',', '.') . "\n\n" .
                 "Silakan cek Admin Panel untuk detailnya.",
                 function ($message) {
                     $message->to(['adnandhw@gmail.com', 'black.busted99@gmail.com'])

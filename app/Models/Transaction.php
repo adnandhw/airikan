@@ -24,6 +24,11 @@ class Transaction extends Model
         'buyer_info', // Stores snapshot of buyer details (name, phone, address)
         'products',   // Stores array of purchased products (snapshot)
         'total_amount',
+        'shipping_cost',
+        'courier_name',
+        'total_weight',
+        'distance',
+        'total_payment',
         'status',     // pending, paid, shipped, completed, cancelled
         'payment_proof', // path/url to image
         'short_id', // 8-char uppercase ID for easy searching

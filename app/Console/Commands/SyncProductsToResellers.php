@@ -33,7 +33,6 @@ class SyncProductsToResellers extends Command
         $count = 0;
 
         foreach ($products as $product) {
-            // Check if exists based on product_id
             $exists = ProductReseller::where('product_id', $product->id)->exists();
 
             if (!$exists) {

@@ -29,11 +29,9 @@ class CategoryForm
                     ->maxLength(255)
                     ->live(onBlur: true)
                     ->afterStateUpdated(function ($state, callable $set) {
-                        // auto slug
                         $set('slug', Str::slug($state));
                     }),
 
-                // 🔽 slug disimpan tapi tidak ditampilkan
                 Forms\Components\Hidden::make('slug')
                     ->required(),
             ]);

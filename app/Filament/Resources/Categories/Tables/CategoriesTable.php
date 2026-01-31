@@ -17,7 +17,7 @@ class CategoriesTable
             ->columns([
                 ImageColumn::make('image')
                     ->label('Image')
-                    ->disk('public') // 🔑 penting
+                    ->disk('public')
                     ->height(60)
                     ->width(60)
                     ->rounded()

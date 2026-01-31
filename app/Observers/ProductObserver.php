@@ -47,6 +47,7 @@ class ProductObserver
             'stock' => $product->stock,
             'image' => $product->image,
             'size' => $product->size,
+            'weight' => $product->weight,
             'category_id' => $product->category_id,
             'is_active' => false, // Default to hidden so admin must approve/enable it first
             'tier_pricing' => [] // Initialize empty, manageable by Reseller Admin
@@ -74,6 +75,7 @@ class ProductObserver
                 'stock' => $product->stock,
                 'image' => $product->image,
                 'size' => $product->size,
+                'weight' => $product->weight,
                 'category_id' => $product->category_id,
                 // Do NOT update tier_pricing, as that is Reseller specific
             ]);

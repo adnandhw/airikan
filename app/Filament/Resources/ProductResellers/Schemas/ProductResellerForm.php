@@ -21,15 +21,13 @@ class ProductResellerForm
 
             Grid::make(2)->schema([
 
-                // Nama Produk (Synced)
                 TextInput::make('name')
                     ->label('Nama Produk (Sinkron dari Utama)')
                     ->disabled()
-                    ->dehydrated(false) // Don't send dirty state if disabled
+                    ->dehydrated(false)
                     ->required()
                     ->maxLength(150),
 
-                // Kategori (Synced)
                 Select::make('category_id')
                     ->label('Kategori (Sinkron dari Utama)')
                     ->options(
@@ -41,13 +39,11 @@ class ProductResellerForm
                     ->dehydrated(false)
                     ->required(),
 
-                // Visibility Toggle
                 \Filament\Forms\Components\Toggle::make('is_active')
                     ->label('Tampilkan di Website?')
                     ->default(true)
                     ->columnSpan(2),
 
-                // Parent Product (Link for Stock Sync) - READ ONLY
                 Select::make('product_id')
                     ->label('Parent Product (Otomatis)')
                     ->options(
@@ -58,7 +54,6 @@ class ProductResellerForm
                     ->disabled()
                     ->dehydrated(false),
 
-                // Jenis / Varian (Synced)
                 TextInput::make('type')
                     ->label('Jenis / Varian (Sinkron)')
                     ->disabled()
@@ -66,7 +61,6 @@ class ProductResellerForm
                     ->placeholder('Plakat Fancy, Halfmoon, dll')
                     ->required(),
 
-                // Harga (Synced)
                 TextInput::make('price')
                     ->label('Harga (Sinkron)')
                     ->disabled()
@@ -75,7 +69,6 @@ class ProductResellerForm
                     ->prefix('Rp')
                     ->required(),
 
-                // Stok (Synced)
                 TextInput::make('stock')
                     ->label('Stok (Sinkron)')
                     ->disabled()
@@ -84,7 +77,6 @@ class ProductResellerForm
                     ->minValue(0)
                     ->required(),
 
-                // Upload gambar (Synced)
                 FileUpload::make('image')
                     ->label('Foto Produk (Sinkron)')
                     ->disabled()
@@ -94,13 +86,19 @@ class ProductResellerForm
                     ->imagePreviewHeight('150')
                     ->required(),
 
-                // Ukuran (Synced)
                 TextInput::make('size')
                     ->label('Ukuran (Sinkron)')
                     ->disabled()
                     ->dehydrated(false)
                     ->placeholder('Contoh: 15cm')
                     ->maxLength(50),
+
+                TextInput::make('weight')
+                    ->label('Berat (Gram) (Sinkron)')
+                    ->disabled()
+                    ->dehydrated(false)
+                    ->numeric()
+                    ->suffix('Gram'),
 
                 Forms\Components\Repeater::make('tier_pricing')
                     ->label('Atur Harga Berdasarkan Jumlah')
@@ -146,7 +144,6 @@ class ProductResellerForm
 
             ]),
 
-            // Deskripsi (Synced)
             Textarea::make('description')
                 ->label('Deskripsi (Sinkron)')
                 ->disabled()

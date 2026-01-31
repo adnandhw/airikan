@@ -36,7 +36,7 @@ class BuyersTable
                     ->sortable(),
             ])
             ->filters([
-                //
+               
             ])
             ->actions([
                 EditAction::make(),
