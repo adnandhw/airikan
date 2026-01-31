@@ -75,9 +75,8 @@ class ProductObserver
                 'stock' => $product->stock,
                 'image' => $product->image,
                 'size' => $product->size,
-                'weight' => $product->weight,
                 'category_id' => $product->category_id,
-                // Do NOT update tier_pricing, as that is Reseller specific
+                // Do NOT update weight or tier_pricing, as those can be managed independently
             ]);
         }
     }

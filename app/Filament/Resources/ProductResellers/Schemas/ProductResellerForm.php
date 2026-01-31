@@ -94,9 +94,7 @@ class ProductResellerForm
                     ->maxLength(50),
 
                 TextInput::make('weight')
-                    ->label('Berat (Gram) (Sinkron)')
-                    ->disabled()
-                    ->dehydrated(false)
+                    ->label('Berat (Gram)')
                     ->numeric()
                     ->minValue(0)
                     ->suffix('Gram'),
