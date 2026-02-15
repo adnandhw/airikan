@@ -101,36 +101,36 @@
                         @endphp
                         <div style="display: flex; flex-direction: column; gap: 12px; min-width: 250px; margin-left: auto;">
                             {{-- Total Weight --}}
-                            <div style="display: flex; justify-content: space-between; align-items: center; color: #2563eb; font-size: 0.875rem;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; color: #ffffff; font-size: 0.875rem;">
                                 <span>Berat Total</span>
-                                <span style="font-weight: 500; color: #2563eb;" class="dark:text-blue-400">
+                                <span style="font-weight: 500; color: #ffffff;">
                                     {{ $calculatedWeight < 1000 ? $calculatedWeight . ' g' : number_format($calculatedWeight / 1000, 2, ',', '.') . ' kg' }}
                                 </span>
                             </div>
 
                             {{-- Subtotal --}}
-                            <div style="display: flex; justify-content: space-between; align-items: center; color: #2563eb; font-size: 0.875rem;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; color: #ffffff; font-size: 0.875rem;">
                                 <span>Subtotal Produk</span>
-                                <span style="font-weight: 500; color: #2563eb;" class="dark:text-blue-400">Rp{{ number_format($total, 0, ',', '.') }}</span>
+                                <span style="font-weight: 500; color: #ffffff;">Rp{{ number_format($total, 0, ',', '.') }}</span>
                             </div>
 
                             {{-- Shipping --}}
                             @if($shipping_cost > 0)
-                            <div style="display: flex; justify-content: space-between; align-items: center; color: #2563eb; font-size: 0.875rem;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; color: #ffffff; font-size: 0.875rem;">
                                 <div style="display: flex; align-items: center; gap: 8px;">
                                     <span>Biaya Pengiriman</span>
-                                    <span style="padding: 2px 6px; border-radius: 4px; background-color: #dbeafe; color: #1e40af; font-size: 10px; font-weight: 700; text-transform: uppercase;" class="dark:bg-blue-900 dark:text-blue-200">
+                                    <span style="padding: 2px 6px; border-radius: 4px; background-color: rgba(255,255,255,0.15); color: #ffffff; font-size: 10px; font-weight: 700; text-transform: uppercase;">
                                         {{ $courier_name }}
                                     </span>
                                 </div>
-                                <span style="font-weight: 500; color: #2563eb;" class="dark:text-blue-400">Rp{{ number_format($shipping_cost, 0, ',', '.') }}</span>
+                                <span style="font-weight: 500; color: #ffffff;">Rp{{ number_format($shipping_cost, 0, ',', '.') }}</span>
                             </div>
                             @endif
 
                             {{-- Total --}}
-                            <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 16px; margin-top: 4px; border-top: 1px solid #bfdbfe;" class="dark:border-blue-800">
-                                <span style="font-size: 0.75rem; font-weight: 700; color: #2563eb; text-transform: uppercase; letter-spacing: 0.025em;">Total Pembayaran</span>
-                                <span style="font-size: 1.875rem; font-weight: 800; color: #2563eb;" class="dark:text-blue-500">
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 16px; margin-top: 4px; border-top: 1px solid rgba(255,255,255,0.2);">
+                                <span style="font-size: 0.75rem; font-weight: 700; color: #ffffff; text-transform: uppercase; letter-spacing: 0.025em;">Total Pembayaran</span>
+                                <span style="font-size: 1.875rem; font-weight: 800; color: #ffffff;">
                                     Rp{{ number_format($total + $shipping_cost, 0, ',', '.') }}
                                 </span>
                             </div>
