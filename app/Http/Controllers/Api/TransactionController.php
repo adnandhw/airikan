@@ -140,7 +140,7 @@ class TransactionController extends Controller
 
         // Send Email Notifications (Admin & Customer)
         try {
-            $adminEmails = ['adnandhw@gmail.com', 'black.busted99@gmail.com'];
+            $adminEmails = ['adnandhw@gmail.com', 'naufalarezaa12@gmail.com'];
             
             // 1. Send to Admins
             Mail::to($adminEmails)->send(new OrderNotification($transaction, true));
@@ -235,7 +235,7 @@ class TransactionController extends Controller
 
             // Send Email to Admin
             try {
-                \Illuminate\Support\Facades\Mail::to(['adnandhw@gmail.com', 'black.busted99@gmail.com'])->send(new \App\Mail\PaymentProofUploaded($transaction));
+                \Illuminate\Support\Facades\Mail::to(['adnandhw@gmail.com', 'naufalarezaa12@gmail.com'])->send(new \App\Mail\PaymentProofUploaded($transaction));
             } catch (\Exception $e) {
                 \Illuminate\Support\Facades\Log::error('Failed to send payment proof email: ' . $e->getMessage());
             }
